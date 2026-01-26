@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import authRoutes from './auth.routes';
+import departmentRoutes from './departmentRoutes';
 
 /**
  * Enrutador principal de la API
@@ -18,8 +19,10 @@ router.get('/health', (req, res) => {
 // Rutas de autenticación
 router.use('/auth', authRoutes);
 
+// Rutas de departamentos
+router.use('/departments', departmentRoutes);
+
 // Aquí se agregarán más rutas según se implementen
-// router.use('/departments', departmentRoutes);
 // router.use('/users', userRoutes);
 // router.use('/alerts', alertRoutes);
 // router.use('/config', configRoutes);
