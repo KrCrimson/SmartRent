@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import authRoutes from './auth.routes';
 import tenantRoutes from './tenant.routes';
+import { userRoutes } from './user.routes';
 
 /**
  * Enrutador principal de la API
@@ -22,9 +23,11 @@ router.use('/auth', authRoutes);
 // Rutas de inquilinos
 router.use('/tenants', tenantRoutes);
 
+// Rutas de usuarios
+router.use('/users', userRoutes);
+
 // Aquí se agregarán más rutas según se implementen
 // router.use('/departments', departmentRoutes);
-// router.use('/users', userRoutes);
 // router.use('/alerts', alertRoutes);
 // router.use('/config', configRoutes);
 
