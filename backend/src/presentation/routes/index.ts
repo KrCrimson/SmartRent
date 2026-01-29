@@ -3,6 +3,7 @@ import authRoutes from './auth.routes';
 import tenantRoutes from './tenant.routes';
 import { userRoutes } from './user.routes';
 import departmentAssignmentRoutes from './departmentAssignment.routes';
+import departmentRoutes from './departmentRoutes';
 
 /**
  * Enrutador principal de la API
@@ -21,6 +22,9 @@ router.get('/health', (req, res) => {
 // Rutas de autenticación
 router.use('/auth', authRoutes);
 
+// Rutas de departamentos
+router.use('/departments', departmentRoutes);
+
 // Rutas de inquilinos
 router.use('/tenants', tenantRoutes);
 
@@ -29,7 +33,8 @@ router.use('/users', userRoutes);
 router.use('/users', departmentAssignmentRoutes);
 
 // Aquí se agregarán más rutas según se implementen
-// router.use('/departments', departmentRoutes);
+// router.use('/users', userRoutes);
+>>>>>>> 5-hu-005-crud-de-departamentos-backend
 // router.use('/alerts', alertRoutes);
 // router.use('/config', configRoutes);
 
