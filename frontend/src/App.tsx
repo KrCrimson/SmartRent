@@ -7,6 +7,8 @@ import LoginPage from '@pages/LoginPage';
 import DashboardPage from '@pages/DashboardPage';
 import AdminPage from '@pages/AdminPage';
 import AdminUsersPage from '@pages/AdminUsersPage';
+import DepartmentsPage from '@pages/DepartmentsPage';
+import DepartmentDetailPage from '@pages/DepartmentDetailPage';
 
 const App: React.FC = () => {
   return (
@@ -38,8 +40,10 @@ const App: React.FC = () => {
         />
         
         <Routes>
-          {/* Ruta pública */}
+          {/* Rutas públicas */}
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/departments" element={<DepartmentsPage />} />
+          <Route path="/departments/:id" element={<DepartmentDetailPage />} />
 
           {/* Rutas protegidas para usuarios */}
           <Route element={<ProtectedRoute allowedRoles={['user']} />}>
