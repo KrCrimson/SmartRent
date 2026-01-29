@@ -153,3 +153,49 @@ export const changePasswordValidators = [
     .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
     .withMessage('La nueva contraseña debe contener al menos una letra minúscula, una mayúscula y un número')
 ];
+
+// Validadores para asignar departamento
+export const assignDepartmentValidators = [
+  param('id')
+    .isMongoId()
+    .withMessage('ID de usuario inválido'),
+  
+  body('departmentId')
+    .notEmpty()
+    .withMessage('ID de departamento requerido')
+    .isMongoId()
+    .withMessage('ID de departamento inválido'),
+  
+  body('contractStartDate')
+    .notEmpty()
+    .withMessage('Fecha de inicio de contrato requerida')
+    .isISO8601()
+    .withMessage('Fecha de inicio de contrato inválida')
+    .toDate(),
+  
+  body('contractEndDate')
+    .notEmpty()
+    .withMessage('Fecha de fin de contrato requerida')
+    .isISO8601()
+    .withMessage('Fecha de fin de contrato inválida')
+    .toDate(),
+  
+  // Validación personalizada para fechas
+  body().custom((body) => {
+    if (body.contractStartDate && body.contractEndDate) {
+      const start = new Date(body.contractStartDate);
+      const end = new Date(body.contractEndDate);
+      if (end <= start) {
+        throw new Error('La fecha de fin del contrato debe ser posterior a la fecha de inicio');
+      }
+    }
+    return true;
+  })
+];
+
+// Validadores para desasignar departamento
+export const unassignDepartmentValidators = [
+  param('id')
+    .isMongoId()
+    .withMessage('ID de usuario inválido')
+];
