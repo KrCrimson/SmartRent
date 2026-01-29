@@ -4,6 +4,8 @@ import { GetAllDepartmentsUseCase } from '@application/use-cases/departments/Get
 import { GetDepartmentByIdUseCase } from '@application/use-cases/departments/GetDepartmentByIdUseCase';
 import { UpdateDepartmentUseCase } from '@application/use-cases/departments/UpdateDepartmentUseCase';
 import { DeleteDepartmentUseCase } from '@application/use-cases/departments/DeleteDepartmentUseCase';
+import { UploadDepartmentImagesUseCase } from '@application/use-cases/departments/UploadDepartmentImagesUseCase';
+import { DeleteDepartmentImageUseCase } from '@application/use-cases/departments/DeleteDepartmentImageUseCase';
 import { DepartmentFilters } from '@domain/repositories/IDepartmentRepository';
 
 export class DepartmentController {
@@ -12,7 +14,9 @@ export class DepartmentController {
     private getAllDepartmentsUseCase: GetAllDepartmentsUseCase,
     private getDepartmentByIdUseCase: GetDepartmentByIdUseCase,
     private updateDepartmentUseCase: UpdateDepartmentUseCase,
-    private deleteDepartmentUseCase: DeleteDepartmentUseCase
+    private deleteDepartmentUseCase: DeleteDepartmentUseCase,
+    private uploadDepartmentImagesUseCase: UploadDepartmentImagesUseCase,
+    private deleteDepartmentImageUseCase: DeleteDepartmentImageUseCase
   ) {}
 
   create = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -90,6 +94,50 @@ export class DepartmentController {
       res.json({
         success: true,
         message: 'Departamento eliminado exitosamente',
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  uploadImages = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      if (!req.files || !Array.isArray(req.files) || req.files.length === 0) {
+        res.status(400).json({
+          success: false,
+          message: 'No se recibieron archivos para subir',
+        });
+        return;
+      }
+
+      const imageBuffers = req.files.map((file: Express.Multer.File) => file.buffer);
+      const department = await this.uploadDepartmentImagesUseCase.execute(
+        req.params.id,
+        imageBuffers
+      );
+
+      res.json({
+        success: true,
+        message: `${req.files.length} imagen(es) subida(s) exitosamente`,
+        data: department,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  deleteImage = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const imageUrl = decodeURIComponent(req.params.imageUrl);
+      const department = await this.deleteDepartmentImageUseCase.execute(
+        req.params.id,
+        imageUrl
+      );
+
+      res.json({
+        success: true,
+        message: 'Imagen eliminada exitosamente',
+        data: department,
       });
     } catch (error) {
       next(error);
