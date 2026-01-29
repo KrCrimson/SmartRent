@@ -6,6 +6,7 @@ import { ProtectedRoute } from '@components/ProtectedRoute';
 import LoginPage from '@pages/LoginPage';
 import DashboardPage from '@pages/DashboardPage';
 import AdminPage from '@pages/AdminPage';
+import AdminUsersPage from '@pages/AdminUsersPage';
 
 const App: React.FC = () => {
   return (
@@ -48,6 +49,7 @@ const App: React.FC = () => {
           {/* Rutas protegidas para administradores */}
           <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
             <Route path="/admin" element={<AdminPage />} />
+            <Route path="/admin/usuarios" element={<AdminUsersPage />} />
           </Route>
 
           {/* Redirección por defecto */}
