@@ -14,10 +14,10 @@ dotenv.config();
 async function startServer(): Promise<void> {
   try {
     // Inicializar dependencias
-    DependencyContainer.setup();
+    DependencyContainer.register();
     
     // Conectar a MongoDB
-    await MongooseConfig.connect();
+    await MongooseConfig.getInstance().connect();
     logger.info('✅ MongoDB conectado exitosamente');
 
     // Obtener puerto

@@ -43,4 +43,9 @@ export interface IUserRepository {
    * Verificar si existe un usuario con el email dado
    */
   existsByEmail(email: string): Promise<boolean>;
+
+  /**
+   * Encontrar usuarios que tienen contratos activos
+   */
+  findUsersWithContracts(): Promise<User[]>;
 }

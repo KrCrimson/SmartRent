@@ -8,7 +8,9 @@ import { UpdateDepartmentUseCase } from '@application/use-cases/departments/Upda
 import { DeleteDepartmentUseCase } from '@application/use-cases/departments/DeleteDepartmentUseCase';
 import { UploadDepartmentImagesUseCase } from '@application/use-cases/departments/UploadDepartmentImagesUseCase';
 import { DeleteDepartmentImageUseCase } from '@application/use-cases/departments/DeleteDepartmentImageUseCase';
+import { GetMyDepartmentUseCase } from '@application/use-cases/departments/GetMyDepartmentUseCase';
 import { CloudinaryService } from '@infrastructure/services/CloudinaryService';
+import { UserRepository } from '@infrastructure/repositories/UserRepository';
 import { authMiddleware } from '@presentation/middleware/auth.middleware';
 import { roleMiddleware } from '@presentation/middleware/roles.middleware';
 import { upload, handleMulterError } from '@presentation/middleware/upload.middleware';
@@ -17,6 +19,7 @@ const router = Router();
 
 // Instanciar dependencias
 const departmentRepository = new DepartmentRepository();
+const userRepository = new UserRepository();
 const imageStorageService = new CloudinaryService();
 
 const createDepartmentUseCase = new CreateDepartmentUseCase(departmentRepository);
@@ -24,6 +27,7 @@ const getAllDepartmentsUseCase = new GetAllDepartmentsUseCase(departmentReposito
 const getDepartmentByIdUseCase = new GetDepartmentByIdUseCase(departmentRepository);
 const updateDepartmentUseCase = new UpdateDepartmentUseCase(departmentRepository);
 const deleteDepartmentUseCase = new DeleteDepartmentUseCase(departmentRepository);
+const getMyDepartmentUseCase = new GetMyDepartmentUseCase(userRepository, departmentRepository);
 const uploadDepartmentImagesUseCase = new UploadDepartmentImagesUseCase(
   departmentRepository,
   imageStorageService
@@ -40,7 +44,8 @@ const departmentController = new DepartmentController(
   updateDepartmentUseCase,
   deleteDepartmentUseCase,
   uploadDepartmentImagesUseCase,
-  deleteDepartmentImageUseCase
+  deleteDepartmentImageUseCase,
+  getMyDepartmentUseCase
 );
 
 /**
@@ -49,6 +54,13 @@ const departmentController = new DepartmentController(
  * @access  Público
  */
 router.get('/', departmentController.getAll);
+
+/**
+ * @route   GET /api/v1/departments/my
+ * @desc    Obtener MI departamento asignado (solo inquilinos)
+ * @access  Privado (Solo inquilinos con departamento asignado)
+ */
+router.get('/my', authMiddleware, departmentController.getMyDepartment);
 
 /**
  * @route   GET /api/v1/departments/:id

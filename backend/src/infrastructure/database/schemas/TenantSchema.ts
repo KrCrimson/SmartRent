@@ -70,7 +70,6 @@ const TenantDocumentsSchema = new Schema({
   idNumber: {
     type: String,
     required: true,
-    unique: true,
     trim: true
   },
   idType: {

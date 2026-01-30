@@ -1,6 +1,8 @@
 import React from 'react';
-import { useAuth } from '@hooks/useAuth';
-import { LogOut, User } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import { LogOut, User, Home, AlertCircle } from 'lucide-react';
+import { NotificationSystem } from '../components/NotificationSystem';
 
 export const DashboardPage: React.FC = () => {
   const { user, logout } = useAuth();
@@ -10,13 +12,19 @@ export const DashboardPage: React.FC = () => {
       <header className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-          <button
-            onClick={logout}
-            className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
-          >
-            <LogOut className="w-4 h-4" />
-            Cerrar Sesión
-          </button>
+          
+          <div className="flex items-center gap-4">
+            {/* Notification System */}
+            <NotificationSystem />
+            
+            <button
+              onClick={logout}
+              className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+            >
+              <LogOut className="w-4 h-4" />
+              Cerrar Sesión
+            </button>
+          </div>
         </div>
       </header>
 
@@ -69,6 +77,41 @@ export const DashboardPage: React.FC = () => {
             </dl>
           </div>
         </div>
+
+        {/* Quick Actions for Tenants */}
+        {user?.role === 'user' && (
+          <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Link
+              to="/mi-departamento"
+              className="bg-white rounded-lg shadow p-6 hover:shadow-md transition-shadow group"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
+                  <Home className="w-6 h-6 text-blue-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">Mi Departamento</h3>
+                  <p className="text-gray-600">Ver información de tu departamento y contrato</p>
+                </div>
+              </div>
+            </Link>
+
+            <Link
+              to="/alerts"
+              className="bg-white rounded-lg shadow p-6 hover:shadow-md transition-shadow group"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center group-hover:bg-orange-200 transition-colors">
+                  <AlertCircle className="w-6 h-6 text-orange-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">Mis Alertas</h3>
+                  <p className="text-gray-600">Reportar problemas y ver el estado de tus alertas</p>
+                </div>
+              </div>
+            </Link>
+          </div>
+        )}
 
         <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
           <h3 className="text-lg font-medium text-blue-900 mb-2">

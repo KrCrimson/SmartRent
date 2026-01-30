@@ -1,7 +1,7 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { authService } from '@services/authService';
-import type { User, LoginCredentials } from '@/types/auth';
+import { authService } from '../services/authService';
+import type { User, LoginCredentials } from '../types/auth';
 import toast from 'react-hot-toast';
 
 interface AuthContextType {
@@ -91,4 +91,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+};
+
+// Hook personalizado para usar el contexto
+export const useAuth = () => {
+  const context = React.useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth debe ser usado dentro de un AuthProvider');
+  }
+  return context;
 };

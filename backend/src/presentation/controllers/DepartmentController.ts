@@ -6,6 +6,7 @@ import { UpdateDepartmentUseCase } from '@application/use-cases/departments/Upda
 import { DeleteDepartmentUseCase } from '@application/use-cases/departments/DeleteDepartmentUseCase';
 import { UploadDepartmentImagesUseCase } from '@application/use-cases/departments/UploadDepartmentImagesUseCase';
 import { DeleteDepartmentImageUseCase } from '@application/use-cases/departments/DeleteDepartmentImageUseCase';
+import { GetMyDepartmentUseCase } from '@application/use-cases/departments/GetMyDepartmentUseCase';
 import { DepartmentFilters } from '@domain/repositories/IDepartmentRepository';
 
 export class DepartmentController {
@@ -16,7 +17,8 @@ export class DepartmentController {
     private updateDepartmentUseCase: UpdateDepartmentUseCase,
     private deleteDepartmentUseCase: DeleteDepartmentUseCase,
     private uploadDepartmentImagesUseCase: UploadDepartmentImagesUseCase,
-    private deleteDepartmentImageUseCase: DeleteDepartmentImageUseCase
+    private deleteDepartmentImageUseCase: DeleteDepartmentImageUseCase,
+    private getMyDepartmentUseCase: GetMyDepartmentUseCase
   ) {}
 
   create = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -138,6 +140,30 @@ export class DepartmentController {
         success: true,
         message: 'Imagen eliminada exitosamente',
         data: department,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  getMyDepartment = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const userId = (req as any).user?.id;
+      
+      if (!userId) {
+        res.status(401).json({
+          success: false,
+          message: 'Usuario no autenticado',
+        });
+        return;
+      }
+
+      const myDepartmentData = await this.getMyDepartmentUseCase.execute({ userId });
+
+      res.json({
+        success: true,
+        message: 'Información del departamento obtenida exitosamente',
+        data: myDepartmentData,
       });
     } catch (error) {
       next(error);

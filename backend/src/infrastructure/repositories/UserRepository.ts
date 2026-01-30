@@ -115,4 +115,18 @@ export class UserRepository implements IUserRepository {
     const count = await UserModel.countDocuments({ email: email.toLowerCase() });
     return count > 0;
   }
+
+  /**
+   * Encontrar usuarios que tienen contratos activos
+   */
+  async findUsersWithContracts(): Promise<User[]> {
+    const docs = await UserModel.find({
+      assignedDepartment: { $ne: null },
+      contractStartDate: { $ne: null },
+      contractEndDate: { $ne: null },
+      isActive: true
+    });
+
+    return docs.map(doc => this.toEntity(doc));
+  }
 }

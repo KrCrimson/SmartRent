@@ -1,18 +1,19 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-import { AuthProvider } from '@contexts/AuthContext';
-import { ProtectedRoute } from '@components/ProtectedRoute';
-import LoginPage from '@pages/LoginPage';
-import TestPage from '@pages/TestPage';
-import AlertsPage from '@pages/AlertsPage';
-import CreateAlertPage from '@pages/CreateAlertPage';
-import DashboardPage from '@pages/DashboardPage';
-import AdminPage from '@pages/AdminPage';
-import AdminUsersPage from '@pages/AdminUsersPage';
-import AdminAlertsPage from '@pages/AdminAlertsPage';
-import DepartmentsPage from '@pages/DepartmentsPage';
-import DepartmentDetailPage from '@pages/DepartmentDetailPage';
+import { AuthProvider } from './contexts/AuthContext';
+import { ProtectedRoute } from './components/ProtectedRoute';
+import LoginPage from './pages/LoginPage';
+import TestPage from './pages/TestPage';
+import AlertsPage from './pages/AlertsPage';
+import CreateAlertPage from './pages/CreateAlertPage';
+import DashboardPage from './pages/DashboardPage';
+import AdminPage from './pages/AdminPage';
+import AdminUsersPage from './pages/AdminUsersPage';
+import AdminAlertsPage from './pages/AdminAlertsPage';
+import DepartmentsPage from './pages/DepartmentsPage';
+import DepartmentDetailPage from './pages/DepartmentDetailPage';
+import MyDepartmentPage from './pages/MyDepartmentPage';
 
 const App: React.FC = () => {
   return (
@@ -28,6 +29,7 @@ const App: React.FC = () => {
           {/* Rutas protegidas para usuarios */}
           <Route element={<ProtectedRoute allowedRoles={['user', 'admin']} />}>
             <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/mi-departamento" element={<MyDepartmentPage />} />
             <Route path="/alerts" element={<AlertsPage />} />
             <Route path="/alerts/create" element={<CreateAlertPage />} />
           </Route>

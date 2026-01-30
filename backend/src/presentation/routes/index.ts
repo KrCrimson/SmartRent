@@ -4,7 +4,7 @@ import tenantRoutes from './tenant.routes';
 import { userRoutes } from './user.routes';
 import departmentAssignmentRoutes from './departmentAssignment.routes';
 import departmentRoutes from './departmentRoutes';
-import alertRoutes from './alert.routes';
+import { alertRoutes } from './alertRoutes';
 
 /**
  * Enrutador principal de la API
