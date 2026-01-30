@@ -101,11 +101,11 @@ export class AlertController {
       }
 
       const useCase = container.resolve(MarkAllAlertsAsReadUseCase);
-      const result = await useCase.execute({ userId });
+      const result = await useCase.execute(userId);
 
       res.json({
         success: true,
-        message: `${result.markedCount} alertas marcadas como leídas`,
+        message: `${result.modifiedCount} alertas marcadas como leídas`,
         data: result
       });
     } catch (error: any) {

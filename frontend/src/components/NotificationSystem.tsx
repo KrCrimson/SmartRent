@@ -6,7 +6,7 @@ import {
   Calendar,
   CheckCircle,
   X,
-  MarkAsRead
+  Check
 } from 'lucide-react';
 import contractAlertService, { 
   ContractAlert, 
