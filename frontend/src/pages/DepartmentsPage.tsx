@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Loader2, AlertCircle, Home } from 'lucide-react';
 import { DepartmentCard } from '@/components/DepartmentCard';
 import { DepartmentFiltersComponent } from '@/components/DepartmentFilters';
-import { departmentService } from '@/services/departmentService';
+import departmentService from '@/services/departmentService';
 import type { Department, DepartmentFilters } from '@/types/department';
 
 export const DepartmentsPage: React.FC = () => {

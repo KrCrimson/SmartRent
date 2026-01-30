@@ -5,7 +5,7 @@ import { ImageCarousel } from '@/components/ImageCarousel';
 import { InventoryList } from '@/components/InventoryList';
 import { LocationMap } from '@/components/LocationMap';
 import { ContactForm } from '@/components/ContactForm';
-import { departmentService } from '@/services/departmentService';
+import departmentService from '@/services/departmentService';
 import type { Department } from '@/types/department';
 
 export const DepartmentDetailPage: React.FC = () => {

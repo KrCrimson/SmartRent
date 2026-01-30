@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Home, Calendar, Save } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { assignDepartment } from '@/services/userService';
-import { getAllDepartments } from '@/services/departmentService';
+import departmentService from '@/services/departmentService';
 import { User, AssignDepartmentData } from '@/types/user';
 import { Department } from '@/types/department';
 
@@ -35,7 +35,7 @@ const AssignDepartmentModal: React.FC<AssignDepartmentModalProps> = ({
     try {
       setLoading(true);
       // Obtener solo departamentos disponibles
-      const data = await getAllDepartments({ isAvailable: true });
+      const data = await departmentService.getAllDepartments({ isAvailable: true });
       setDepartments(data);
     } catch (error: any) {
       toast.error(

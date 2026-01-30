@@ -25,6 +25,9 @@ export const upload = multer({
   },
 });
 
+// Alias para compatibilidad
+export const uploadMiddleware = upload;
+
 // Middleware para manejar errores de multer
 export const handleMulterError = (error: any, req: Request, res: any, next: any) => {
   if (error instanceof multer.MulterError) {

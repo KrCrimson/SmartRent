@@ -1,0 +1,40 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "commonjs",
+    "lib": ["ES2020"],
+    "types": ["jest", "node"],
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "noEmit": true,
+    "strict": false,
+    "baseUrl": "../src",
+    "paths": {
+      "@/*": ["*"],
+      "@domain/*": ["domain/*"],
+      "@application/*": ["application/*"],
+      "@infrastructure/*": ["infrastructure/*"],
+      "@shared/*": ["shared/*"]
+    }
+  },
+  "include": [
+    "../src/**/*",
+    "./**/*-simple.test.ts",
+    "./unit/entities/*.test.ts",
+    "./unit/controllers/*-simple.test.ts",
+    "./unit/repositories/*-simple.test.ts",
+    "./unit/use-cases/*-simple.test.ts",
+    "./setup.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "./integration/",
+    "./unit/use-cases/alerts.test.ts",
+    "./unit/use-cases/departments.test.ts",
+    "./unit/use-cases/department-assignment.test.ts"
+  ]
+}

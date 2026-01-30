@@ -59,3 +59,22 @@ export const authMiddleware = async (
     next(error);
   }
 };
+
+/**
+ * Middleware para verificar roles específicos
+ */
+export const requireRoles = (allowedRoles: string[]) => {
+  return (req: AuthRequest, res: Response, next: NextFunction): void => {
+    try {
+      const userRole = req.user?.role;
+      
+      if (!userRole || !allowedRoles.includes(userRole)) {
+        throw new UnauthorizedError('No tienes permisos para acceder a este recurso');
+      }
+      
+      next();
+    } catch (error) {
+      next(error);
+    }
+  };
+};

@@ -70,3 +70,14 @@ export const updateDepartment = async (
 export const deleteDepartment = async (departmentId: string): Promise<void> => {
   await api.delete(`/departments/${departmentId}`);
 };
+
+// Default export for convenience
+const departmentService = {
+  getAllDepartments,
+  getDepartmentById,
+  createDepartment,
+  updateDepartment,
+  deleteDepartment
+};
+
+export default departmentService;
