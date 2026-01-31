@@ -5,8 +5,6 @@ import { AuthProvider } from './contexts/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import LoginPage from './pages/LoginPage';
 import TestPage from './pages/TestPage';
-import AlertsPage from './pages/AlertsPage';
-import CreateAlertPage from './pages/CreateAlertPage';
 import DashboardPage from './pages/DashboardPage';
 import AdminPage from './pages/AdminPage';
 import AdminUsersPage from './pages/AdminUsersPage';
@@ -30,8 +28,6 @@ const App: React.FC = () => {
           <Route element={<ProtectedRoute allowedRoles={['user', 'admin']} />}>
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/mi-departamento" element={<MyDepartmentPage />} />
-            <Route path="/alerts" element={<AlertsPage />} />
-            <Route path="/alerts/create" element={<CreateAlertPage />} />
           </Route>
 
           {/* Rutas protegidas para administradores */}
@@ -42,7 +38,7 @@ const App: React.FC = () => {
           </Route>
 
           {/* Redirección por defecto */}
-          <Route path="/" element={<Navigate to="/alerts" replace />} />
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
           
           {/* Ruta 404 */}
           <Route path="*" element={<Navigate to="/login" replace />} />
