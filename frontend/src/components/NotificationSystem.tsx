@@ -5,8 +5,7 @@ import {
   AlertTriangle, 
   Calendar,
   CheckCircle,
-  X,
-  Check
+  X
 } from 'lucide-react';
 import contractAlertService, { 
   ContractAlert, 

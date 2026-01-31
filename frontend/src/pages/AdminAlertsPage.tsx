@@ -8,7 +8,7 @@ import {
   RefreshCw,
   Loader2
 } from 'lucide-react';
-import alertService from '@/services/alertService';
+import contractAlertService from '../services/contractAlertService';
 import AlertStatsCards from '../components/alerts/AlertStatsCards';
 import AlertsManagementTable from '../components/alerts/AlertsManagementTable';
 import AlertTrendChart from '../components/alerts/AlertTrendChart';
@@ -60,7 +60,7 @@ const AdminAlertsPage: React.FC = () => {
       setIsLoadingStats(true);
       const dateFilters = getDateRangeFilter();
       const statsFilters = { ...filters, ...dateFilters };
-      const statsData = await alertService.getAlertStats(statsFilters);
+      const statsData = await contractAlertService.getAlertStats(statsFilters);
       setStats(statsData);
     } catch (error) {
       console.error('Error loading stats:', error);
@@ -73,13 +73,9 @@ const AdminAlertsPage: React.FC = () => {
   const loadAlerts = async () => {
     try {
       setIsLoadingAlerts(true);
-      const alertsData = await alertService.getAllAlerts(filters, {
-        page: 1,
-        limit: 50,
-        sortBy: 'createdAt',
-        sortOrder: 'desc'
-      });
-      setAlerts(alertsData);
+      // TODO: Implement admin-specific getAllAlerts endpoint
+      const alertsData = await contractAlertService.getUserAlerts(false);
+      setAlerts(alertsData.alerts || []);
     } catch (error) {
       console.error('Error loading alerts:', error);
       toast.error('Error al cargar alertas');
@@ -132,7 +128,9 @@ const AdminAlertsPage: React.FC = () => {
   const handleDeleteAlert = async (alert: Alert) => {
     if (window.confirm('¿Estás seguro de que deseas eliminar esta alerta?')) {
       try {
-        await alertService.deleteAlert(alert.id);
+        // TODO: Implement deleteAlert endpoint
+        // await contractAlertService.deleteAlert(alert.id);
+        console.warn('Delete alert not implemented yet');
         toast.success('Alerta eliminada correctamente');
         loadData();
       } catch (error) {
@@ -150,7 +148,9 @@ const AdminAlertsPage: React.FC = () => {
   const handleAssignToStaff = async (alertId: string, assigneeId: string, assigneeName: string) => {
     try {
       setIsAssigning(true);
-      await alertService.assignAlert(alertId, assigneeId);
+      // TODO: Implement assignAlert endpoint
+      // await contractAlertService.assignAlert(alertId, assigneeId);
+      console.warn('Assign alert not implemented yet');
       toast.success(`Alerta asignada a ${assigneeName}`);
       setShowAssignModal(false);
       setSelectedAlert(null);
@@ -165,7 +165,9 @@ const AdminAlertsPage: React.FC = () => {
 
   const handleChangeStatus = async (alertId: string, status: AlertStatus) => {
     try {
-      await alertService.updateAlertStatus(alertId, { status });
+      // TODO: Implement updateAlertStatus endpoint
+      // await contractAlertService.updateAlertStatus(alertId, { status });
+      console.warn('Update alert status not implemented yet');
       toast.success('Estado de alerta actualizado');
       loadData();
     } catch (error) {
