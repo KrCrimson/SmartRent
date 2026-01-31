@@ -11,7 +11,7 @@ import { DeleteDepartmentImageUseCase } from '@application/use-cases/departments
 import { GetMyDepartmentUseCase } from '@application/use-cases/departments/GetMyDepartmentUseCase';
 import { CloudinaryService } from '@infrastructure/services/CloudinaryService';
 import { UserRepository } from '@infrastructure/repositories/UserRepository';
-import { authMiddleware } from '@presentation/middleware/auth.middleware';
+import { authMiddleware } from '@presentation/middlewares/authMiddleware';
 import { roleMiddleware } from '@presentation/middleware/roles.middleware';
 import { upload, handleMulterError } from '@presentation/middleware/upload.middleware';
 

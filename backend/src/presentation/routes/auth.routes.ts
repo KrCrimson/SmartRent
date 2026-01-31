@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { AuthController } from '@presentation/controllers/AuthController';
-import { authMiddleware } from '@presentation/middleware/auth.middleware';
+import { authMiddleware } from '@presentation/middlewares/authMiddleware';
 import { roleMiddleware } from '@presentation/middleware/roles.middleware';
 import { validateRequest } from '@presentation/middleware/validation.middleware';
 import {

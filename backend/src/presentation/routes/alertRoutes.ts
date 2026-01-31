@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { container } from 'tsyringe';
 import { AlertController } from '@presentation/controllers/AlertController';
-import { authMiddleware } from '@presentation/middleware/auth.middleware';
+import { authMiddleware } from '@presentation/middlewares/authMiddleware';
 
 const router = Router();
 const alertController = container.resolve(AlertController);

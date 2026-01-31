@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { AlertController } from '@infrastructure/controllers/AlertController';
-import { authMiddleware, requireRoles } from '@presentation/middleware/auth.middleware';
+import { authMiddleware } from '@presentation/middlewares/authMiddleware';
+import { roleMiddleware } from '@presentation/middlewares/roleMiddleware';
 import { uploadMiddleware } from '@presentation/middleware/upload.middleware';
 import { rateLimitMiddleware } from '@infrastructure/middleware/rateLimit.middleware';
 
@@ -102,7 +103,7 @@ export function createAlertRoutes(alertController: AlertController): Router {
 
   router.get(
     '/stats',
-    requireRoles(['admin']),
+    roleMiddleware(['admin']),
     rateLimitMiddleware({ windowMs: 5 * 60 * 1000, max: 10 }), // 10 requests por 5 minutos
     alertController.getAlertStats.bind(alertController)
   );

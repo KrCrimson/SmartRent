@@ -8,7 +8,7 @@ import {
   deleteUserValidators,
   getUsersQueryValidators
 } from '../validators/user.validator';
-import { authMiddleware } from '../middleware/auth.middleware';
+import { authMiddleware } from '../middlewares/authMiddleware';
 import { roleMiddleware } from '../middleware/roles.middleware';
 
 const router = Router();
