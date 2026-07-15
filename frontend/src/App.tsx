@@ -7,8 +7,10 @@ import LoginPage from '@pages/LoginPage';
 import DashboardPage from '@pages/DashboardPage';
 import AdminPage from '@pages/AdminPage';
 import AdminUsersPage from '@pages/AdminUsersPage';
+import AdminRequestsPage from '@pages/AdminRequestsPage';
 import DepartmentsPage from '@pages/DepartmentsPage';
 import DepartmentDetailPage from '@pages/DepartmentDetailPage';
+import LandingPage from '@pages/LandingPage';
 
 const App: React.FC = () => {
   return (
@@ -41,6 +43,7 @@ const App: React.FC = () => {
         
         <Routes>
           {/* Rutas públicas */}
+          <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/departments" element={<DepartmentsPage />} />
           <Route path="/departments/:id" element={<DepartmentDetailPage />} />
@@ -54,13 +57,11 @@ const App: React.FC = () => {
           <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
             <Route path="/admin" element={<AdminPage />} />
             <Route path="/admin/usuarios" element={<AdminUsersPage />} />
+            <Route path="/admin/reservas" element={<AdminRequestsPage />} />
           </Route>
-
-          {/* Redirección por defecto */}
-          <Route path="/" element={<Navigate to="/login" replace />} />
           
           {/* Ruta 404 */}
-          <Route path="*" element={<Navigate to="/login" replace />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
 
         {/* Notificaciones Toast */}

@@ -17,18 +17,21 @@ import {
   deleteUser,
   unassignDepartment 
 } from '@/services/userService';
-import { User, UserRole, UserStatus } from '@/types/user';
+import { getAllDepartments } from '@/services/departmentService';
+import { User, UserRole } from '@/types/user';
+import { Department } from '@/types/department';
 import UserFormModal from '@/components/users/UserFormModal';
 import AssignDepartmentModal from '@/components/users/AssignDepartmentModal';
 
 const AdminUsersPage: React.FC = () => {
   const navigate = useNavigate();
   const [users, setUsers] = useState<User[]>([]);
+  const [departments, setDepartments] = useState<Department[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState<UserRole | ''>('');
-  const [statusFilter, setStatusFilter] = useState<UserStatus | ''>('');
+  const [isActiveFilter, setIsActiveFilter] = useState<boolean | ''>('');
   
   // Modals
   const [showUserModal, setShowUserModal] = useState(false);
@@ -38,23 +41,36 @@ const AdminUsersPage: React.FC = () => {
 
   // Load users on mount
   useEffect(() => {
-    loadUsers();
+    loadData();
   }, []);
 
   // Filter users when search or filters change
   useEffect(() => {
     filterUsers();
-  }, [users, searchTerm, roleFilter, statusFilter]);
+  }, [users, searchTerm, roleFilter, isActiveFilter]);
+
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      const [usersData, deptsData] = await Promise.all([
+        getAllUsers(),
+        getAllDepartments()
+      ]);
+      setUsers(usersData);
+      setDepartments(deptsData);
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Error al cargar datos');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const loadUsers = async () => {
     try {
-      setLoading(true);
       const data = await getAllUsers();
       setUsers(data);
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Error al cargar usuarios');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -66,8 +82,7 @@ const AdminUsersPage: React.FC = () => {
       const search = searchTerm.toLowerCase();
       filtered = filtered.filter(
         (user) =>
-          user.firstName.toLowerCase().includes(search) ||
-          user.lastName.toLowerCase().includes(search) ||
+          user.fullName?.toLowerCase().includes(search) ||
           user.email.toLowerCase().includes(search)
       );
     }
@@ -78,8 +93,8 @@ const AdminUsersPage: React.FC = () => {
     }
 
     // Status filter
-    if (statusFilter) {
-      filtered = filtered.filter((user) => user.status === statusFilter);
+    if (isActiveFilter !== '') {
+      filtered = filtered.filter((user) => user.isActive === isActiveFilter);
     }
 
     setFilteredUsers(filtered);
@@ -98,21 +113,23 @@ const AdminUsersPage: React.FC = () => {
   };
 
   const handleDeleteUser = async (user: User) => {
-    if (user.departmentId) {
+    if (user.assignedDepartmentId || user.departmentId) {
       toast.error('No puedes eliminar un usuario con departamento asignado');
       return;
     }
 
     if (
       !window.confirm(
-        `¿Estás seguro de eliminar al usuario ${user.firstName} ${user.lastName}?`
+        `¿Estás seguro de eliminar al usuario ${user.fullName}?`
       )
     ) {
       return;
     }
 
     try {
-      await deleteUser(user.id);
+      const uId = user.id || user._id;
+      if (!uId) throw new Error('ID no encontrado');
+      await deleteUser(uId);
       toast.success('Usuario eliminado exitosamente');
       loadUsers();
     } catch (error: any) {
@@ -130,14 +147,16 @@ const AdminUsersPage: React.FC = () => {
   const handleUnassignDepartment = async (user: User) => {
     if (
       !window.confirm(
-        `¿Estás seguro de desasignar el departamento de ${user.firstName} ${user.lastName}?`
+        `¿Estás seguro de desasignar el departamento de ${user.fullName}?`
       )
     ) {
       return;
     }
 
     try {
-      await unassignDepartment(user.id);
+      const uId = user.id || user._id;
+      if (!uId) throw new Error('ID no encontrado');
+      await unassignDepartment(uId);
       toast.success('Departamento desasignado exitosamente');
       loadUsers();
     } catch (error: any) {
@@ -151,12 +170,12 @@ const AdminUsersPage: React.FC = () => {
     return role === 'admin' ? 'Administrador' : 'Usuario';
   };
 
-  const getStatusLabel = (status: UserStatus): string => {
-    return status === 'active' ? 'Activo' : 'Inactivo';
+  const getStatusLabel = (isActive: boolean): string => {
+    return isActive ? 'Activo' : 'Inactivo';
   };
 
-  const getStatusColor = (status: UserStatus): string => {
-    return status === 'active'
+  const getStatusColor = (isActive: boolean): string => {
+    return isActive
       ? 'bg-green-100 text-green-800'
       : 'bg-red-100 text-red-800';
   };
@@ -243,15 +262,15 @@ const AdminUsersPage: React.FC = () => {
             <div className="relative">
               <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
               <select
-                value={statusFilter}
+                value={isActiveFilter === '' ? '' : isActiveFilter ? 'true' : 'false'}
                 onChange={(e) =>
-                  setStatusFilter(e.target.value as UserStatus | '')
+                  setIsActiveFilter(e.target.value === '' ? '' : e.target.value === 'true')
                 }
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none"
               >
                 <option value="">Todos los estados</option>
-                <option value="active">Activo</option>
-                <option value="inactive">Inactivo</option>
+                <option value="true">Activo</option>
+                <option value="false">Inactivo</option>
               </select>
             </div>
           </div>
@@ -278,7 +297,7 @@ const AdminUsersPage: React.FC = () => {
           <div className="bg-white rounded-lg shadow p-4">
             <p className="text-gray-600 text-sm">Con Departamento</p>
             <p className="text-2xl font-bold text-green-600">
-              {users.filter((u) => u.departmentId).length}
+              {users.filter((u) => u.assignedDepartmentId || u.departmentId).length}
             </p>
           </div>
         </div>
@@ -319,18 +338,17 @@ const AdminUsersPage: React.FC = () => {
                   </tr>
                 ) : (
                   filteredUsers.map((user) => (
-                    <tr key={user.id} className="hover:bg-gray-50">
+                    <tr key={user.id || user._id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <div className="flex-shrink-0 h-10 w-10 bg-gray-200 rounded-full flex items-center justify-center">
-                            <span className="text-gray-600 font-medium">
-                              {user.firstName[0]}
-                              {user.lastName[0]}
+                            <span className="text-gray-600 font-medium uppercase">
+                              {user.fullName?.[0] || 'U'}
                             </span>
                           </div>
                           <div className="ml-4">
                             <div className="text-sm font-medium text-gray-900">
-                              {user.firstName} {user.lastName}
+                              {user.fullName || 'Usuario Desconocido'}
                             </div>
                             {user.phone && (
                               <div className="text-sm text-gray-500">
@@ -355,33 +373,42 @@ const AdminUsersPage: React.FC = () => {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
                           className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(
-                            user.status
+                            user.isActive
                           )}`}
                         >
-                          {getStatusLabel(user.status)}
+                          {getStatusLabel(user.isActive)}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        {user.department ? (
-                          <div className="text-sm">
-                            <div className="text-gray-900 font-medium">
-                              {user.department.code}
-                            </div>
-                            <div className="text-gray-500">
-                              {user.department.name}
-                            </div>
-                          </div>
-                        ) : (
-                          <span className="text-sm text-gray-400">
-                            Sin asignar
-                          </span>
-                        )}
+                        {(() => {
+                          const deptId = user.assignedDepartmentId || user.departmentId;
+                          const dept = departments.find(d => (d.id || d._id) === deptId);
+                          
+                          if (dept || user.department) {
+                            return (
+                              <div className="text-sm">
+                                <div className="text-gray-900 font-medium">
+                                  {dept?.code || user.department?.code}
+                                </div>
+                                <div className="text-gray-500">
+                                  {dept?.name || user.department?.name}
+                                </div>
+                              </div>
+                            );
+                          }
+                          
+                          return (
+                            <span className="text-sm text-gray-400">
+                              Sin asignar
+                            </span>
+                          );
+                        })()}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div className="flex items-center justify-end gap-2">
                           {user.role === 'user' && (
                             <>
-                              {user.departmentId ? (
+                              {(user.assignedDepartmentId || user.departmentId) ? (
                                 <button
                                   onClick={() => handleUnassignDepartment(user)}
                                   className="text-red-600 hover:text-red-900 p-1 hover:bg-red-50 rounded transition-colors"

@@ -3,6 +3,7 @@ import { AuthController } from '@presentation/controllers/AuthController';
 import { authMiddleware } from '@presentation/middleware/auth.middleware';
 import { roleMiddleware } from '@presentation/middleware/roles.middleware';
 import { validateRequest } from '@presentation/middleware/validation.middleware';
+import rateLimit from 'express-rate-limit';
 import {
   loginValidation,
   registerValidation,
@@ -15,6 +16,18 @@ import {
 const router = Router();
 const authController = new AuthController();
 
+// Limite estricto para prevenir fuerza bruta en el login
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutos
+  max: 5, // Límite de 5 peticiones por ventana por IP
+  message: {
+    success: false,
+    message: 'Demasiados intentos de inicio de sesión. Por favor, intenta de nuevo en 15 minutos.'
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 /**
  * @route   POST /api/v1/auth/login
  * @desc    Login de usuario
@@ -22,6 +35,7 @@ const authController = new AuthController();
  */
 router.post(
   '/login',
+  loginLimiter,
   loginValidation,
   validateRequest,
   authController.login.bind(authController)

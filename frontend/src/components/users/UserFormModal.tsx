@@ -18,14 +18,13 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
   onSuccess,
 }) => {
   const [formData, setFormData] = useState({
-    firstName: user?.firstName || '',
-    lastName: user?.lastName || '',
+    fullName: user?.fullName || '',
     email: user?.email || '',
     password: '',
     confirmPassword: '',
     role: (user?.role || 'user') as UserRole,
     phone: user?.phone || '',
-    status: user?.status || 'active',
+    isActive: user ? user.isActive : true,
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -36,14 +35,11 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    // First name
-    if (!formData.firstName.trim()) {
-      newErrors.firstName = 'El nombre es requerido';
-    }
-
-    // Last name
-    if (!formData.lastName.trim()) {
-      newErrors.lastName = 'El apellido es requerido';
+    // Full name
+    if (!formData.fullName.trim()) {
+      newErrors.fullName = 'El nombre completo es requerido';
+    } else if (formData.fullName.trim().length < 3) {
+      newErrors.fullName = 'El nombre debe tener al menos 3 caracteres';
     }
 
     // Email
@@ -57,8 +53,10 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
     if (!isEdit) {
       if (!formData.password) {
         newErrors.password = 'La contraseña es requerida';
-      } else if (formData.password.length < 6) {
-        newErrors.password = 'La contraseña debe tener al menos 6 caracteres';
+      } else if (formData.password.length < 8) {
+        newErrors.password = 'La contraseña debe tener al menos 8 caracteres';
+      } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)) {
+        newErrors.password = 'Debe contener al menos una mayúscula, una minúscula y un número';
       }
 
       if (formData.password !== formData.confirmPassword) {
@@ -68,9 +66,12 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
 
     // Password (opcional al editar, pero validar si se proporciona)
     if (isEdit && formData.password) {
-      if (formData.password.length < 6) {
-        newErrors.password = 'La contraseña debe tener al menos 6 caracteres';
+      if (formData.password.length < 8) {
+        newErrors.password = 'La contraseña debe tener al menos 8 caracteres';
+      } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)) {
+        newErrors.password = 'Debe contener al menos una mayúscula, una minúscula y un número';
       }
+      
       if (formData.password !== formData.confirmPassword) {
         newErrors.confirmPassword = 'Las contraseñas no coinciden';
       }
@@ -98,11 +99,10 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
       if (isEdit && user) {
         // Update user
         const updateData: UpdateUserData = {
-          firstName: formData.firstName,
-          lastName: formData.lastName,
+          fullName: formData.fullName,
           email: formData.email,
           role: formData.role,
-          status: formData.status as 'active' | 'inactive',
+          isActive: formData.isActive,
         };
 
         // Only include password if changed
@@ -115,13 +115,12 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
           updateData.phone = formData.phone;
         }
 
-        await updateUser(user.id, updateData);
+        await updateUser(user.id as string, updateData);
         toast.success('Usuario actualizado exitosamente');
       } else {
         // Create user
         const createData: CreateUserData = {
-          firstName: formData.firstName,
-          lastName: formData.lastName,
+          fullName: formData.fullName,
           email: formData.email,
           password: formData.password,
           role: formData.role,
@@ -141,7 +140,14 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
       const message =
         error.response?.data?.message ||
         `Error al ${isEdit ? 'actualizar' : 'crear'} usuario`;
-      toast.error(message);
+
+      if (error.response?.data?.errors && Array.isArray(error.response.data.errors)) {
+        // Mostrar el primer error de validación específico
+        const firstError = error.response.data.errors[0];
+        toast.error(firstError.msg || firstError.message || message);
+      } else {
+        toast.error(message);
+      }
     } finally {
       setLoading(false);
     }
@@ -184,51 +190,28 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
-          {/* Name fields */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Name field */}
+          <div className="grid grid-cols-1 gap-4">
             <div>
               <label
-                htmlFor="firstName"
+                htmlFor="fullName"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                Nombre <span className="text-red-500">*</span>
+                Nombre Completo <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
-                id="firstName"
-                name="firstName"
-                value={formData.firstName}
+                id="fullName"
+                name="fullName"
+                value={formData.fullName}
                 onChange={handleChange}
                 className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  errors.firstName ? 'border-red-500' : 'border-gray-300'
+                  errors.fullName ? 'border-red-500' : 'border-gray-300'
                 }`}
-                placeholder="Juan"
+                placeholder="Juan Pérez"
               />
-              {errors.firstName && (
-                <p className="text-red-500 text-sm mt-1">{errors.firstName}</p>
-              )}
-            </div>
-
-            <div>
-              <label
-                htmlFor="lastName"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Apellido <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                id="lastName"
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  errors.lastName ? 'border-red-500' : 'border-gray-300'
-                }`}
-                placeholder="Pérez"
-              />
-              {errors.lastName && (
-                <p className="text-red-500 text-sm mt-1">{errors.lastName}</p>
+              {errors.fullName && (
+                <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>
               )}
             </div>
           </div>
@@ -383,20 +366,20 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
             {isEdit && (
               <div>
                 <label
-                  htmlFor="status"
+                  htmlFor="isActive"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
                   Estado
                 </label>
                 <select
-                  id="status"
-                  name="status"
-                  value={formData.status}
-                  onChange={handleChange}
+                  id="isActive"
+                  name="isActive"
+                  value={formData.isActive.toString()}
+                  onChange={(e) => setFormData(prev => ({ ...prev, isActive: e.target.value === 'true' }))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  <option value="active">Activo</option>
-                  <option value="inactive">Inactivo</option>
+                  <option value="true">Activo</option>
+                  <option value="false">Inactivo</option>
                 </select>
               </div>
             )}

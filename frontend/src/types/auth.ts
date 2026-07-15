@@ -3,8 +3,6 @@ export interface User {
   id: string;
   email: string;
   role: 'admin' | 'user';
-  firstName: string;
-  lastName: string;
   fullName: string;
   phone: string;
   dni?: string;

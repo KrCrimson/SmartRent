@@ -102,12 +102,8 @@ export class DepartmentRepository implements IDepartmentRepository {
 
   async delete(id: string): Promise<boolean> {
     try {
-      // Soft delete - solo marcamos como inactivo
-      const result = await DepartmentModel.findByIdAndUpdate(
-        id,
-        { $set: { isActive: false } },
-        { new: true }
-      );
+      // Hard delete
+      const result = await DepartmentModel.findByIdAndDelete(id);
 
       return result !== null;
     } catch (error: any) {
@@ -164,6 +160,7 @@ export class DepartmentRepository implements IDepartmentRepository {
       description: doc.description,
       status: doc.status,
       monthlyPrice: doc.monthlyPrice,
+      deposit: doc.deposit,
       images: doc.images,
       address: doc.address,
       features: doc.features,

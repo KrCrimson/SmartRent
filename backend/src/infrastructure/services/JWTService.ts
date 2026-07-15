@@ -13,8 +13,11 @@ export class JWTService implements IJWTService {
   private readonly refreshTokenExpiry: string;
 
   constructor() {
-    this.accessTokenSecret = process.env.JWT_SECRET || 'default_secret';
-    this.refreshTokenSecret = process.env.JWT_REFRESH_SECRET || 'default_refresh_secret';
+    if (!process.env.JWT_SECRET || !process.env.JWT_REFRESH_SECRET) {
+      throw new Error('CRITICAL: JWT_SECRET y JWT_REFRESH_SECRET deben estar definidos en las variables de entorno.');
+    }
+    this.accessTokenSecret = process.env.JWT_SECRET;
+    this.refreshTokenSecret = process.env.JWT_REFRESH_SECRET;
     this.accessTokenExpiry = process.env.JWT_EXPIRES_IN || '7d';
     this.refreshTokenExpiry = process.env.JWT_REFRESH_EXPIRES_IN || '30d';
   }

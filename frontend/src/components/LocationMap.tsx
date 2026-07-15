@@ -1,6 +1,20 @@
 import React from 'react';
 import { MapPin, Navigation } from 'lucide-react';
 import type { Address } from '@/types/department';
+import { MapContainer, TileLayer, Marker } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+
+const DefaultIcon = L.icon({
+  iconUrl: icon,
+  shadowUrl: iconShadow,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+});
+L.Marker.prototype.options.icon = DefaultIcon;
 
 interface LocationMapProps {
   address: Address;
@@ -8,7 +22,13 @@ interface LocationMapProps {
 }
 
 export const LocationMap: React.FC<LocationMapProps> = ({ address, departmentName }) => {
-  const fullAddress = `${address.street} ${address.number}, ${address.city}, ${address.state}, ${address.country}`;
+  const parts = [
+    `${address.street} ${address.number || ''}`.trim(),
+    address.city,
+    address.state,
+    address.country
+  ].filter(Boolean);
+  const fullAddress = parts.join(', ');
   
   // Construir URL de Google Maps
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddress)}`;
@@ -33,47 +53,64 @@ export const LocationMap: React.FC<LocationMapProps> = ({ address, departmentNam
               <div><strong>Apartamento:</strong> {address.apartment}</div>
             )}
             <div><strong>Ciudad:</strong> {address.city}</div>
-            <div><strong>Estado:</strong> {address.state}</div>
-            <div><strong>Código Postal:</strong> {address.zipCode}</div>
-            <div><strong>País:</strong> {address.country}</div>
+            {address.state && <div><strong>Estado:</strong> {address.state}</div>}
+            {address.zipCode && <div><strong>Código Postal:</strong> {address.zipCode}</div>}
+            {address.postalCode && <div><strong>Código Postal:</strong> {address.postalCode}</div>}
+            {address.country && <div><strong>País:</strong> {address.country}</div>}
           </div>
         </div>
 
-        {/* Mapa embebido (placeholder) */}
-        <div className="bg-gray-100 rounded-lg overflow-hidden">
-          <div className="aspect-video relative">
-            {/* Placeholder para mapa - En producción se usaría Google Maps API */}
-            <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-              <div className="text-center">
-                <MapPin className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h4 className="text-lg font-semibold text-gray-700 mb-2">
-                  {departmentName}
-                </h4>
-                <p className="text-gray-600 mb-4">
-                  {fullAddress}
-                </p>
-                <div className="space-y-2">
-                  <a
-                    href={mapsUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors mr-2"
-                  >
-                    <MapPin className="w-4 h-4" />
-                    Ver en Google Maps
-                  </a>
+        {/* Mapa embebido */}
+        <div className="bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
+          <div className="aspect-video relative z-0">
+            {address.coordinates ? (
+              <MapContainer 
+                center={[address.coordinates.lat, address.coordinates.lng]} 
+                zoom={15} 
+                scrollWheelZoom={false} 
+                style={{ height: '100%', width: '100%', zIndex: 0 }}
+              >
+                <TileLayer
+                  attribution='&copy; <a href="https://www.openstreetmap.org/">OSM</a>'
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+                <Marker position={[address.coordinates.lat, address.coordinates.lng]} />
+                <div className="absolute bottom-4 left-4 z-[1000] bg-white/90 p-2 rounded shadow-md pointer-events-auto">
                   <a
                     href={directionsUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                    className="flex items-center gap-2 text-sm font-semibold text-blue-600 hover:text-blue-800"
                   >
                     <Navigation className="w-4 h-4" />
-                    Cómo llegar
+                    Cómo llegar (Google Maps)
                   </a>
                 </div>
+              </MapContainer>
+            ) : (
+              <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                <div className="text-center">
+                  <MapPin className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                  <h4 className="text-lg font-semibold text-gray-700 mb-2">
+                    {departmentName}
+                  </h4>
+                  <p className="text-gray-600 mb-4">
+                    {fullAddress}
+                  </p>
+                  <div className="space-y-2">
+                    <a
+                      href={mapsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors mr-2"
+                    >
+                      <MapPin className="w-4 h-4" />
+                      Ver en Google Maps
+                    </a>
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
 

@@ -36,7 +36,7 @@ export class DepartmentController {
   getAll = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const filters: DepartmentFilters = {
-        status: req.query.status as any,
+        status: (req.query.status as any) || (req.query.isAvailable === 'true' ? 'available' : undefined),
         minPrice: req.query.minPrice ? Number(req.query.minPrice) : undefined,
         maxPrice: req.query.maxPrice ? Number(req.query.maxPrice) : undefined,
         bedrooms: req.query.bedrooms ? Number(req.query.bedrooms) : undefined,

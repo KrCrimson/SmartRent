@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Send, User, Mail, Phone, MessageSquare, CheckCircle } from 'lucide-react';
+import { contactService } from '../services/contact.service';
+import toast from 'react-hot-toast';
 
 interface ContactFormProps {
   departmentName: string;
@@ -30,18 +32,19 @@ export const ContactForm: React.FC<ContactFormProps> = ({ departmentName, depart
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simular envío (en producción iría a una API)
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
-    console.log('Contact form submitted:', {
-      ...formData,
-      departmentId,
-      departmentName,
-      timestamp: new Date().toISOString(),
-    });
-
-    setIsSubmitted(true);
-    setIsSubmitting(false);
+    try {
+      await contactService.createRequest({
+        ...formData,
+        departmentId,
+        departmentName,
+      });
+      setIsSubmitted(true);
+    } catch (error) {
+      console.error('Error enviando contacto:', error);
+      toast.error('Ocurrió un error al enviar tu mensaje. Intenta nuevamente.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const isFormValid = formData.name.trim() && formData.email.trim() && formData.message.trim();

@@ -40,9 +40,9 @@ export class UserRepository implements IUserRepository {
       role: user.role,
       fullName: user.fullName,
       phone: user.phone,
-      assignedDepartment: user.assignedDepartmentId as any,
-      contractStartDate: user.contractStartDate,
-      contractEndDate: user.contractEndDate,
+      assignedDepartment: user.assignedDepartmentId ? (user.assignedDepartmentId as any) : null,
+      contractStartDate: user.contractStartDate || (null as any),
+      contractEndDate: user.contractEndDate || (null as any),
       isActive: user.isActive
     };
   }
@@ -80,8 +80,8 @@ export class UserRepository implements IUserRepository {
   }
 
   async delete(id: string): Promise<void> {
-    // Soft delete: marcar como inactivo
-    await UserModel.findByIdAndUpdate(id, { isActive: false });
+    // Hard delete
+    await UserModel.findByIdAndDelete(id);
   }
 
   async findAll(filters?: {

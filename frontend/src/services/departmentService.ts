@@ -70,3 +70,36 @@ export const updateDepartment = async (
 export const deleteDepartment = async (departmentId: string): Promise<void> => {
   await api.delete(`/departments/${departmentId}`);
 };
+
+/**
+ * Upload images for a department
+ */
+export const uploadDepartmentImages = async (
+  departmentId: string,
+  files: File[]
+): Promise<Department> => {
+  const formData = new FormData();
+  files.forEach(file => {
+    formData.append('images', file); // 'images' coincide con el backend: upload.array('images', 10)
+  });
+  
+  const response = await api.post<ApiResponse<Department>>(
+    `/departments/${departmentId}/images`,
+    formData,
+    {
+      headers: {
+        'Content-Type': undefined
+      }
+    }
+  );
+  return response.data.data;
+};
+
+export const departmentService = {
+  getAll: getAllDepartments,
+  getById: getDepartmentById,
+  create: createDepartment,
+  update: updateDepartment,
+  delete: deleteDepartment,
+  uploadImages: uploadDepartmentImages
+};

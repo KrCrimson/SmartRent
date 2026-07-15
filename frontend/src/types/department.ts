@@ -7,23 +7,38 @@ export interface Address {
   state: string;
   country: string;
   postalCode?: string;
+  floor?: string | number;
+  coordinates?: {
+    lat: number;
+    lng: number;
+  };
 }
 
 export interface Department {
-  id: string;
+  _id?: string;
+  id?: string;
   code: string;
   name: string;
   description?: string;
   address: Address;
-  rentAmount: number;
+  monthlyPrice: number;
+  rentAmount?: number; // Para retrocompatibilidad
   deposit: number;
-  area: number; // in square meters
-  bedrooms: number;
-  bathrooms: number;
-  floor: number;
-  isAvailable: boolean;
+  area?: number; 
+  bedrooms?: number;
+  bathrooms?: number;
+  floor?: number;
+  isAvailable?: boolean;
+  status: 'available' | 'occupied' | 'maintenance';
   amenities: string[];
-  features: string[];
+  features: {
+    bedrooms: number;
+    bathrooms: number;
+    squareMeters: number;
+    hasParking?: boolean;
+    hasFurniture?: boolean;
+  };
+  inventory?: any[];
   images: string[];
   currentTenant?: {
     id: string;
@@ -47,6 +62,8 @@ export interface CreateDepartmentData {
   bedrooms: number;
   bathrooms: number;
   floor: number;
+  hasParking?: boolean;
+  hasFurniture?: boolean;
   amenities: string[];
   features: string[];
   images?: string[];

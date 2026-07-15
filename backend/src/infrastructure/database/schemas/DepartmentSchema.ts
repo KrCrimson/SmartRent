@@ -61,6 +61,11 @@ const DepartmentSchema = new Schema<DepartmentDocument>(
       required: [true, 'El precio mensual es requerido'],
       min: [0, 'El precio no puede ser negativo'],
     },
+    deposit: {
+      type: Number,
+      default: 0,
+      min: [0, 'La garantía no puede ser negativa'],
+    },
     images: {
       type: [String],
       default: [],

@@ -37,7 +37,12 @@ export const authMiddleware = async (
 
     // 2. Verificar token
     const jwtService = container.resolve<IJWTService>('IJWTService');
-    const decoded = jwtService.verifyAccessToken(token);
+    let decoded;
+    try {
+      decoded = jwtService.verifyAccessToken(token);
+    } catch (err) {
+      throw new UnauthorizedError('Token inválido o expirado');
+    }
 
     // 3. Verificar que el usuario existe y está activo
     const userRepository = container.resolve<IUserRepository>('IUserRepository');

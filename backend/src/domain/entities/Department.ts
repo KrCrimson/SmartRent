@@ -4,6 +4,10 @@ export interface Address {
   floor?: string;
   city: string;
   postalCode: string;
+  coordinates?: {
+    lat: number;
+    lng: number;
+  };
 }
 
 export interface Features {
@@ -30,6 +34,7 @@ export interface Department {
   description: string;
   status: DepartmentStatus;
   monthlyPrice: number;
+  deposit?: number;
   images: string[];
   address: Address;
   features: Features;

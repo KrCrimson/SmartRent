@@ -101,7 +101,7 @@ const AssignDepartmentModal: React.FC<AssignDepartmentModalProps> = ({
     setSubmitting(true);
 
     try {
-      await assignDepartment(user.id, {
+      await assignDepartment(user.id as string, {
         departmentId: formData.departmentId,
         contractStartDate: new Date(formData.contractStartDate).toISOString(),
         contractEndDate: new Date(formData.contractEndDate).toISOString(),
@@ -148,7 +148,7 @@ const AssignDepartmentModal: React.FC<AssignDepartmentModalProps> = ({
   };
 
   const selectedDepartment = departments.find(
-    (d) => d.id === formData.departmentId
+    (d) => (d.id || d._id) === formData.departmentId
   );
 
   return (
@@ -162,7 +162,7 @@ const AssignDepartmentModal: React.FC<AssignDepartmentModalProps> = ({
               Asignar Departamento
             </h2>
             <p className="text-gray-600 mt-1">
-              Usuario: <span className="font-medium">{user.firstName} {user.lastName}</span>
+              Usuario: <span className="font-medium">{user.fullName}</span>
             </p>
           </div>
           <button
@@ -208,11 +208,14 @@ const AssignDepartmentModal: React.FC<AssignDepartmentModalProps> = ({
                 }`}
               >
                 <option value="">Selecciona un departamento</option>
-                {departments.map((dept) => (
-                  <option key={dept.id} value={dept.id}>
-                    {dept.code} - {dept.name} (${dept.rentAmount}/mes)
-                  </option>
-                ))}
+                {departments.map((dept) => {
+                  const deptId = dept._id || dept.id;
+                  return (
+                    <option key={deptId} value={deptId}>
+                      {dept.code} - {dept.name} (${dept.monthlyPrice || dept.rentAmount}/mes)
+                    </option>
+                  );
+                })}
               </select>
               {errors.departmentId && (
                 <p className="text-red-500 text-sm mt-1">
@@ -235,31 +238,31 @@ const AssignDepartmentModal: React.FC<AssignDepartmentModalProps> = ({
                   <div>
                     <span className="text-gray-600">Renta:</span>
                     <span className="ml-2 font-medium">
-                      ${selectedDepartment.rentAmount}/mes
+                      ${selectedDepartment.monthlyPrice || selectedDepartment.rentAmount}/mes
                     </span>
                   </div>
                   <div>
                     <span className="text-gray-600">Habitaciones:</span>
                     <span className="ml-2 font-medium">
-                      {selectedDepartment.bedrooms}
+                      {selectedDepartment.features?.bedrooms || selectedDepartment.bedrooms || 'N/A'}
                     </span>
                   </div>
                   <div>
                     <span className="text-gray-600">Baños:</span>
                     <span className="ml-2 font-medium">
-                      {selectedDepartment.bathrooms}
+                      {selectedDepartment.features?.bathrooms || selectedDepartment.bathrooms || 'N/A'}
                     </span>
                   </div>
                   <div>
                     <span className="text-gray-600">Área:</span>
                     <span className="ml-2 font-medium">
-                      {selectedDepartment.area} m²
+                      {selectedDepartment.features?.squareMeters || selectedDepartment.area || 'N/A'} m²
                     </span>
                   </div>
                   <div>
                     <span className="text-gray-600">Piso:</span>
                     <span className="ml-2 font-medium">
-                      {selectedDepartment.floor}
+                      {selectedDepartment.floor || 'N/A'}
                     </span>
                   </div>
                 </div>
@@ -269,7 +272,9 @@ const AssignDepartmentModal: React.FC<AssignDepartmentModalProps> = ({
                     {selectedDepartment.address.street} {selectedDepartment.address.number}
                   </p>
                   <p className="text-gray-600 text-sm">
-                    {selectedDepartment.address.city}, {selectedDepartment.address.state}
+                    {selectedDepartment.address.city}
+                    {selectedDepartment.address.state ? `, ${selectedDepartment.address.state}` : ''}
+                    {selectedDepartment.address.country ? ` - ${selectedDepartment.address.country}` : ''}
                   </p>
                 </div>
               </div>

@@ -18,9 +18,13 @@ export class MongooseConfig {
 
   async connect(): Promise<void> {
     try {
-      const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/smartrent';
+      const mongoUri = process.env.MONGODB_URI;
+      
+      if (!mongoUri && process.env.NODE_ENV === 'production') {
+        throw new Error('CRITICAL: MONGODB_URI no está definido en el entorno de producción.');
+      }
 
-      await mongoose.connect(mongoUri);
+      await mongoose.connect(mongoUri || 'mongodb://localhost:27017/smartrent');
 
       logger.info('✅ Conectado a MongoDB exitosamente');
 

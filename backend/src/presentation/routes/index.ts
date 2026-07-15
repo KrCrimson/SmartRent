@@ -4,6 +4,7 @@ import tenantRoutes from './tenant.routes';
 import { userRoutes } from './user.routes';
 import departmentAssignmentRoutes from './departmentAssignment.routes';
 import departmentRoutes from './departmentRoutes';
+import contactRoutes from './contact.routes';
 
 /**
  * Enrutador principal de la API
@@ -32,9 +33,11 @@ router.use('/tenants', tenantRoutes);
 router.use('/users', userRoutes);
 router.use('/users', departmentAssignmentRoutes);
 
+// Rutas de contacto (peticiones de reserva)
+router.use('/contact', contactRoutes);
+
 // Aquí se agregarán más rutas según se implementen
 // router.use('/users', userRoutes);
->>>>>>> 5-hu-005-crud-de-departamentos-backend
 // router.use('/alerts', alertRoutes);
 // router.use('/config', configRoutes);
 

@@ -162,7 +162,7 @@ export const DepartmentDetailPage: React.FC = () => {
                 <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
                   <Home className="w-5 h-5 text-gray-600" />
                   <div>
-                    <div className="font-semibold">{department.features.floor}º</div>
+                    <div className="font-semibold">{department.address?.floor || department.floor || 1}º</div>
                     <div className="text-sm text-gray-600">Piso</div>
                   </div>
                 </div>
@@ -219,7 +219,7 @@ export const DepartmentDetailPage: React.FC = () => {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                           <span className="font-medium text-gray-700">Piso:</span>
-                          <span className="ml-2 text-gray-600">{department.features.floor}</span>
+                          <span className="ml-2 text-gray-600">{department.address?.floor || department.floor || 1}</span>
                         </div>
                         <div>
                           <span className="font-medium text-gray-700">Área total:</span>
@@ -256,7 +256,7 @@ export const DepartmentDetailPage: React.FC = () => {
                 )}
 
                 {activeTab === 'contact' && department.status === 'available' && (
-                  <ContactForm departmentName={department.name} departmentId={department._id} />
+                  <ContactForm departmentName={department.name} departmentId={department._id || department.id || ''} />
                 )}
 
                 {activeTab === 'contact' && department.status !== 'available' && (

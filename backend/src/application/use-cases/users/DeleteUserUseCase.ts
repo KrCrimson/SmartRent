@@ -40,11 +40,7 @@ export class DeleteUserUseCase {
       }
     }
 
-    // Realizar soft delete (desactivar usuario en lugar de eliminar completamente)
-    existingUser.deactivate();
-    await this.userRepository.update(existingUser);
-
-    // Alternativa: hard delete si se requiere
-    // await this.userRepository.delete(userId);
+    // Realizar hard delete (eliminación permanente)
+    await this.userRepository.delete(userId);
   }
 }

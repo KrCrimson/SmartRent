@@ -29,7 +29,7 @@ export const getAllUsers = async (filters?: UserFilters): Promise<User[]> => {
   const params = new URLSearchParams();
   
   if (filters?.role) params.append('role', filters.role);
-  if (filters?.status) params.append('status', filters.status);
+  if (filters?.isActive !== undefined) params.append('isActive', String(filters.isActive));
   if (filters?.search) params.append('search', filters.search);
   if (filters?.hasDepartment !== undefined) {
     params.append('hasDepartment', String(filters.hasDepartment));

@@ -5,6 +5,8 @@ import helmet from 'helmet';
 import cors from 'cors';
 import compression from 'compression';
 import rateLimit from 'express-rate-limit';
+import mongoSanitize from 'express-mongo-sanitize';
+import path from 'path';
 import { MongooseConfig } from '@infrastructure/database/mongoose.config';
 import { DependencyContainer } from './container';
 import { errorMiddleware } from '@presentation/middleware/error.middleware';
@@ -35,7 +37,9 @@ class Server {
    */
   private initializeMiddlewares(): void {
     // Seguridad
-    this.app.use(helmet());
+    this.app.use(helmet({
+      crossOriginResourcePolicy: { policy: "cross-origin" }
+    }));
     
     // CORS
     this.app.use(cors({
@@ -46,6 +50,12 @@ class Server {
     // Body parser
     this.app.use(express.json({ limit: '10mb' }));
     this.app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+    // Static files (uploads) explícito
+    this.app.use('/uploads', express.static(path.join(process.cwd(), 'public', 'uploads')));
+
+    // Data sanitization against NoSQL query injection
+    this.app.use(mongoSanitize());
 
     // Compresión
     this.app.use(compression());

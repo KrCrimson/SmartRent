@@ -9,6 +9,7 @@ import { DeleteDepartmentUseCase } from '@application/use-cases/departments/Dele
 import { UploadDepartmentImagesUseCase } from '@application/use-cases/departments/UploadDepartmentImagesUseCase';
 import { DeleteDepartmentImageUseCase } from '@application/use-cases/departments/DeleteDepartmentImageUseCase';
 import { CloudinaryService } from '@infrastructure/services/CloudinaryService';
+import { LocalImageStorageService } from '@infrastructure/services/LocalImageStorageService';
 import { authMiddleware } from '@presentation/middleware/auth.middleware';
 import { roleMiddleware } from '@presentation/middleware/roles.middleware';
 import { upload, handleMulterError } from '@presentation/middleware/upload.middleware';
@@ -17,7 +18,9 @@ const router = Router();
 
 // Instanciar dependencias
 const departmentRepository = new DepartmentRepository();
-const imageStorageService = new CloudinaryService();
+const imageStorageService = process.env.CLOUDINARY_CLOUD_NAME 
+  ? new CloudinaryService() 
+  : new LocalImageStorageService();
 
 const createDepartmentUseCase = new CreateDepartmentUseCase(departmentRepository);
 const getAllDepartmentsUseCase = new GetAllDepartmentsUseCase(departmentRepository);

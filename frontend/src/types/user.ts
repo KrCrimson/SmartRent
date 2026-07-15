@@ -4,14 +4,15 @@ export type UserRole = 'admin' | 'user';
 export type UserStatus = 'active' | 'inactive';
 
 export interface User {
-  id: string;
-  firstName: string;
-  lastName: string;
+  _id?: string;
+  id?: string;
+  fullName: string;
   email: string;
   role: UserRole;
-  status: UserStatus;
+  isActive: boolean;
   phone?: string;
-  departmentId?: string;
+  departmentId?: string; // Por retrocompatibilidad si es necesario
+  assignedDepartmentId?: string;
   department?: {
     id: string;
     code: string;
@@ -24,8 +25,7 @@ export interface User {
 }
 
 export interface CreateUserData {
-  firstName: string;
-  lastName: string;
+  fullName: string;
   email: string;
   password: string;
   role: UserRole;
@@ -33,12 +33,11 @@ export interface CreateUserData {
 }
 
 export interface UpdateUserData {
-  firstName?: string;
-  lastName?: string;
+  fullName?: string;
   email?: string;
   password?: string;
   role?: UserRole;
-  status?: UserStatus;
+  isActive?: boolean;
   phone?: string;
 }
 
@@ -50,7 +49,7 @@ export interface AssignDepartmentData {
 
 export interface UserFilters {
   role?: UserRole;
-  status?: UserStatus;
+  isActive?: boolean;
   search?: string; // Search by name or email
   hasDepartment?: boolean;
 }
