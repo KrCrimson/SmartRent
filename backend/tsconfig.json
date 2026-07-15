@@ -19,9 +19,6 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "types": [
-      "node"
-    ],
     "paths": {
       "@domain/*": [
         "./src/domain/*"

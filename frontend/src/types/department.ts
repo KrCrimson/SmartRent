@@ -113,6 +113,9 @@ export type DepartmentStatus = 'available' | 'occupied' | 'maintenance';
 export interface InventoryItem {
   id: string;
   name: string;
+  description?: string;
+  brand?: string;
+  model?: string;
   condition: string;
   quantity: number;
 }
