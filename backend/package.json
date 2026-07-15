@@ -5,7 +5,7 @@
   "main": "dist/server.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only -r tsconfig-paths/register src/server.ts",
-    "build": "tsc",
+    "build": "tsc && tsc-alias",
     "start": "node dist/server.js",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -40,6 +40,7 @@
     "reflect-metadata": "^0.2.1",
     "tsyringe": "^4.8.0",
     "winston": "^3.11.0",
+    "tsc-alias": "^1.8.10",
     "@types/bcryptjs": "^2.4.6",
     "@types/compression": "^1.7.5",
     "@types/cors": "^2.8.17",
