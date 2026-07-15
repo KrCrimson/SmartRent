@@ -7,7 +7,9 @@ export interface Address {
   state: string;
   country: string;
   postalCode?: string;
+  zipCode?: string;
   floor?: string | number;
+  apartment?: string;
   coordinates?: {
     lat: number;
     lng: number;
@@ -29,7 +31,7 @@ export interface Department {
   bathrooms?: number;
   floor?: number;
   isAvailable?: boolean;
-  status: 'available' | 'occupied' | 'maintenance';
+  status: DepartmentStatus;
   amenities: string[];
   features: {
     bedrooms: number;
@@ -38,7 +40,7 @@ export interface Department {
     hasParking?: boolean;
     hasFurniture?: boolean;
   };
-  inventory?: any[];
+  inventory?: InventoryItem[];
   images: string[];
   currentTenant?: {
     id: string;
@@ -88,6 +90,10 @@ export interface UpdateDepartmentData {
 
 export interface DepartmentFilters {
   isAvailable?: boolean;
+  status?: string;
+  city?: string;
+  minPrice?: number;
+  maxPrice?: number;
   minRent?: number;
   maxRent?: number;
   bedrooms?: number;
@@ -98,6 +104,17 @@ export interface DepartmentFilters {
   amenities?: string[];
   features?: string[];
   search?: string;
+  hasParking?: boolean;
+  hasFurniture?: boolean;
+}
+
+export type DepartmentStatus = 'available' | 'occupied' | 'maintenance';
+
+export interface InventoryItem {
+  id: string;
+  name: string;
+  condition: string;
+  quantity: number;
 }
 
 // Enum for common amenities
