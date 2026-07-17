@@ -124,9 +124,9 @@ export const DepartmentFormModal: React.FC<DepartmentFormModalProps> = ({ isOpen
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl mt-auto md:mt-0">
-        <div className="flex justify-between items-center p-6 border-b border-slate-100">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 sm:p-6">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl flex flex-col max-h-[90vh]">
+        <div className="flex justify-between items-center p-6 border-b border-slate-100 shrink-0">
           <h2 className="text-2xl font-bold text-slate-800">
             {initialData ? 'Editar Departamento' : 'Nuevo Departamento'}
           </h2>
@@ -135,8 +135,9 @@ export const DepartmentFormModal: React.FC<DepartmentFormModalProps> = ({ isOpen
           </button>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col flex-1 overflow-hidden">
+          <div className="p-6 overflow-y-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             
             <div className="col-span-1">
               <label className="block text-sm font-medium text-slate-700 mb-1">Código (Ej. 101)</label>
@@ -295,9 +296,10 @@ export const DepartmentFormModal: React.FC<DepartmentFormModalProps> = ({ isOpen
               )}
             </div>
 
+            </div>
           </div>
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+          <div className="flex justify-end gap-3 p-6 border-t border-slate-100 shrink-0 bg-white rounded-b-2xl">
             <button 
               type="button" 
               onClick={onClose}

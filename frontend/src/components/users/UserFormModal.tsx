@@ -174,10 +174,10 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 sm:p-6">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl flex flex-col max-h-[90vh]">
         {/* Header */}
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+        <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between shrink-0 rounded-t-lg">
           <h2 className="text-2xl font-bold text-gray-900">
             {isEdit ? 'Editar Usuario' : 'Crear Nuevo Usuario'}
           </h2>
@@ -190,7 +190,8 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
+          <div className="p-6 space-y-6 overflow-y-auto">
           {/* Name field */}
           <div className="grid grid-cols-1 gap-4">
             <div>
@@ -386,8 +387,10 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
             )}
           </div>
 
+          </div>
+
           {/* Actions */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t">
+          <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200 shrink-0 bg-white rounded-b-lg">
             <button
               type="button"
               onClick={onClose}
