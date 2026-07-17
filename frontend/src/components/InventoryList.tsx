@@ -85,7 +85,7 @@ export const InventoryList: React.FC<InventoryListProps> = ({ inventory }) => {
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
-                  <h4 className="font-semibold text-gray-900">{item.name}</h4>
+                  <h4 className="font-semibold text-gray-900">{item.item}</h4>
                   <div className="flex items-center gap-1">
                     {getConditionIcon(item.condition)}
                     <span
@@ -96,18 +96,10 @@ export const InventoryList: React.FC<InventoryListProps> = ({ inventory }) => {
                   </div>
                 </div>
                 
-                {item.description && (
-                  <p className="text-gray-600 text-sm mb-2">{item.description}</p>
-                )}
+                <p className="text-gray-600 text-sm mb-2 font-medium">Categoría: {item.category}</p>
 
                 <div className="flex items-center gap-4 text-sm text-gray-500">
                   <span>Cantidad: <span className="font-medium">{item.quantity}</span></span>
-                  {item.brand && (
-                    <span>Marca: <span className="font-medium">{item.brand}</span></span>
-                  )}
-                  {item.model && (
-                    <span>Modelo: <span className="font-medium">{item.model}</span></span>
-                  )}
                 </div>
               </div>
             </div>
