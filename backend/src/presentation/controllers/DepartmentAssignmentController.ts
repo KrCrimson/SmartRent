@@ -3,6 +3,7 @@ import { validationResult } from 'express-validator';
 import { AssignDepartmentUseCase } from '../../application/use-cases/users/AssignDepartmentUseCase';
 import { UnassignDepartmentUseCase } from '../../application/use-cases/users/UnassignDepartmentUseCase';
 import { UserRepository } from '../../infrastructure/repositories/UserRepository';
+import { DepartmentRepository } from '../../infrastructure/repositories/DepartmentRepository';
 import { NotFoundError } from '../../shared/errors/NotFoundError';
 import { ConflictError } from '../../shared/errors/ConflictError';
 import { ValidationError } from '../../shared/errors/ValidationError';
@@ -25,8 +26,9 @@ export class DepartmentAssignmentController {
 
   constructor() {
     this.userRepository = new UserRepository();
-    this.assignDepartmentUseCase = new AssignDepartmentUseCase(this.userRepository);
-    this.unassignDepartmentUseCase = new UnassignDepartmentUseCase(this.userRepository);
+    const departmentRepository = new DepartmentRepository();
+    this.assignDepartmentUseCase = new AssignDepartmentUseCase(this.userRepository, departmentRepository);
+    this.unassignDepartmentUseCase = new UnassignDepartmentUseCase(this.userRepository, departmentRepository);
   }
 
   /**

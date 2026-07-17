@@ -99,12 +99,7 @@ export const LoginPage: React.FC = () => {
           </button>
         </form>
 
-        <div className="mt-6 text-center text-sm text-gray-600">
-          <p>Credenciales de prueba:</p>
-          <p className="font-mono bg-gray-100 p-2 rounded mt-2">
-            admin@smartrent.com / Admin123
-          </p>
-        </div>
+
       </div>
     </div>
   );

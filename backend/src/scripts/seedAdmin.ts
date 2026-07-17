@@ -24,9 +24,9 @@ const UserSchema = new mongoose.Schema({
 });
 
 const ADMIN_USER = {
-  firstName: 'Admin',
-  lastName: 'SmartRent',
-  email: 'admin@smartrent.com',
+  firstName: 'Sebastian',
+  lastName: 'Arce',
+  email: 'sebastianarce2010@gmail.com',
   password: 'Admin123',
   role: 'admin' as const,
   phone: '+51999999999',
@@ -42,26 +42,22 @@ async function seedAdmin() {
     // Crear o obtener el modelo
     const UserModel = mongoose.models.User || mongoose.model('User', UserSchema);
 
-    // Verificar si el admin ya existe
-    const existingAdmin = await UserModel.findOne({ email: ADMIN_USER.email });
-
-    if (existingAdmin) {
-      console.log('⚠️  El usuario admin ya existe');
-      console.log('Email:', ADMIN_USER.email);
-      console.log('Password: Admin123');
-      process.exit(0);
-    }
+    // Eliminar admins anteriores para limpiar la base de datos
+    await UserModel.deleteMany({ role: 'admin' });
+    console.log('🗑️  Admins anteriores eliminados');
 
     // Hash de la contraseña
     const hashedPassword = await bcrypt.hash(ADMIN_USER.password, 10);
 
-    // Crear usuario admin
-    const admin = new UserModel({
-      ...ADMIN_USER,
-      password: hashedPassword,
-    });
-
-    await admin.save();
+    // Buscar si el usuario ya existe y actualizarlo a admin, o crearlo si no existe
+    await UserModel.findOneAndUpdate(
+      { email: ADMIN_USER.email },
+      { 
+        ...ADMIN_USER,
+        password: hashedPassword 
+      },
+      { upsert: true, new: true }
+    );
 
     console.log('✅ Usuario admin creado exitosamente');
     console.log('───────────────────────────────────');

@@ -115,7 +115,8 @@ const UserFormModal: React.FC<UserFormModalProps> = ({
           updateData.phone = formData.phone;
         }
 
-        await updateUser(user.id as string, updateData);
+        const userId = user.id || user._id;
+        await updateUser(userId as string, updateData);
         toast.success('Usuario actualizado exitosamente');
       } else {
         // Create user

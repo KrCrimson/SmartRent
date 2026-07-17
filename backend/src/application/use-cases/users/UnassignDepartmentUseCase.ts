@@ -4,6 +4,8 @@ import { ConflictError } from '../../../shared/errors/ConflictError';
 import { ValidationError } from '../../../shared/errors/ValidationError';
 import { User } from '../../../domain/entities/User.entity';
 
+import { IDepartmentRepository } from '../../../domain/repositories/IDepartmentRepository';
+
 /**
  * Use Case: Desasignar un departamento de un usuario (inquilino)
  * 
@@ -14,7 +16,10 @@ import { User } from '../../../domain/entities/User.entity';
  * - El departamento debe liberarse (estado a 'available')
  */
 export class UnassignDepartmentUseCase {
-  constructor(private userRepository: IUserRepository) {}
+  constructor(
+    private userRepository: IUserRepository,
+    private departmentRepository: IDepartmentRepository
+  ) {}
 
   async execute(userId: string): Promise<User> {
     // 1. Validar datos de entrada
@@ -38,17 +43,9 @@ export class UnassignDepartmentUseCase {
     const departmentId = user.assignedDepartmentId;
 
     // 5. TODO: Validar que no haya alertas activas
-    // Cuando tengamos el AlertRepository implementado:
-    // const activeAlerts = await alertRepository.findByUserAndStatus(userId, 'pending');
-    // if (activeAlerts.length > 0) {
-    //   throw new ConflictError('No se puede desasignar el departamento mientras haya alertas activas pendientes');
-    // }
 
     // 6. Validar si el contrato está activo
     if (user.hasActiveContract()) {
-      // Opcional: Podemos permitir desasignar pero con advertencia
-      // o podemos requerir que el contrato esté vencido
-      // Por ahora, permitiremos desasignar incluso con contrato activo
       console.warn(`Desasignando departamento con contrato activo para usuario ${userId}`);
     }
 
@@ -65,8 +62,8 @@ export class UnassignDepartmentUseCase {
     // 8. Guardar los cambios
     const updatedUser = await this.userRepository.update(user);
 
-    // 9. TODO: Actualizar el estado del departamento a 'available'
-    // await departmentRepository.updateStatus(departmentId, 'available');
+    // 9. Actualizar el estado del departamento a 'available'
+    await this.departmentRepository.removeTenant(departmentId);
 
     return updatedUser;
   }

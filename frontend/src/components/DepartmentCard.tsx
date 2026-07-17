@@ -11,7 +11,7 @@ interface DepartmentCardProps {
 }
 
 export const DepartmentCard: React.FC<DepartmentCardProps> = ({ department, isAdmin, onDelete, onEdit }) => {
-  const isAvailable = department.isAvailable ?? true;
+  const isAvailable = department.status === 'available' || department.isAvailable === true;
   const statusColor = isAvailable ? 'text-emerald-700' : 'text-red-700';
   const statusLabel = isAvailable ? 'Disponible' : 'Ocupado';
 

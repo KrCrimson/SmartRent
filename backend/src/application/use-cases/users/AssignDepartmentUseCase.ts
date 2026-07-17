@@ -22,8 +22,13 @@ export interface AssignDepartmentRequest {
  * - Las fechas del contrato deben ser válidas
  * - La fecha de fin debe ser posterior a la fecha de inicio
  */
+import { IDepartmentRepository } from '../../../domain/repositories/IDepartmentRepository';
+
 export class AssignDepartmentUseCase {
-  constructor(private userRepository: IUserRepository) {}
+  constructor(
+    private userRepository: IUserRepository,
+    private departmentRepository: IDepartmentRepository
+  ) {}
 
   async execute(request: AssignDepartmentRequest): Promise<User> {
     // 1. Validar datos de entrada
@@ -91,11 +96,10 @@ export class AssignDepartmentUseCase {
       );
     }
 
-    // 7. TODO: Validar que el departamento exista y esté disponible
-    // Cuando tengamos el DepartmentRepository implementado:
-    // const department = await departmentRepository.findById(request.departmentId);
-    // if (!department) throw new NotFoundError('Departamento no encontrado');
-    // if (!department.isAvailable) throw new ConflictError('Departamento no disponible');
+    // 7. Validar que el departamento exista y esté disponible
+    const department = await this.departmentRepository.findById(request.departmentId);
+    if (!department) throw new NotFoundError('Departamento no encontrado');
+    if (department.status !== 'available') throw new ConflictError('Departamento no disponible');
 
     // 8. Asignar el departamento usando el método de la entidad
     try {
@@ -114,8 +118,8 @@ export class AssignDepartmentUseCase {
     // 9. Guardar los cambios
     const updatedUser = await this.userRepository.update(user);
 
-    // 10. TODO: Actualizar el estado del departamento a 'occupied'
-    // await departmentRepository.updateStatus(request.departmentId, 'occupied');
+    // 10. Actualizar el estado del departamento a 'occupied'
+    await this.departmentRepository.assignTenant(request.departmentId, updatedUser.id);
 
     return updatedUser;
   }
