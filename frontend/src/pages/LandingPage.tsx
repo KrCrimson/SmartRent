@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Building2, Shield, MapPin, Phone, ArrowRight, CheckCircle2, Home, Key, Image as ImageIcon, Send, MessageSquare } from 'lucide-react';
 import { departmentService } from '@/services/departmentService';
@@ -17,7 +17,7 @@ const LandingPage: React.FC = () => {
   const WHATSAPP_MESSAGE = 'Hola, vi sus departamentos en internet y me gustaría agendar una visita.';
   const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
 
-  const [contactForm, setContactForm] = useState({ name: '', email: '', phone: '', message: '' });
+  const [contactForm, setContactForm] = useState({ name: '', email: '', phone: '', message: '', departmentId: '', departmentName: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleContactSubmit = async (e: React.FormEvent) => {
@@ -26,7 +26,7 @@ const LandingPage: React.FC = () => {
     try {
       await contactService.create(contactForm);
       toast.success('Mensaje enviado exitosamente. Nos pondremos en contacto pronto.');
-      setContactForm({ name: '', email: '', phone: '', message: '' });
+      setContactForm({ name: '', email: '', phone: '', message: '', departmentId: '', departmentName: '' });
     } catch (error) {
       toast.error('Ocurrió un error al enviar el mensaje. Por favor intenta por WhatsApp.');
       console.error(error);
@@ -48,6 +48,38 @@ const LandingPage: React.FC = () => {
     };
     fetchDepartments();
   }, []);
+
+  const heroImages = useMemo(() => {
+    if (!availableDepartments || availableDepartments.length === 0) {
+      return ['https://images.unsplash.com/photo-1600607686527-6fb886090705?auto=format&fit=crop&q=80&w=1200'];
+    }
+    
+    const getDeptImg = (code: string, idx: number) => {
+      const dept = availableDepartments.find(d => String(d.code) === code);
+      return dept && dept.images && dept.images.length > idx ? getImageUrl(dept.images[idx]) : null;
+    };
+    
+    const imgs = [
+      getDeptImg('301', 2), // 301 imagen 3
+      getDeptImg('302', 0), // 302 imagen 1
+      getDeptImg('302', 1), // 302 imagen 2
+      getDeptImg('302', 5), // 302 imagen 6
+      getDeptImg('401', 5), // 401 imagen 6
+    ].filter(Boolean) as string[];
+    
+    return imgs.length > 0 ? imgs : ['https://images.unsplash.com/photo-1600607686527-6fb886090705?auto=format&fit=crop&q=80&w=1200'];
+  }, [availableDepartments]);
+
+  const [heroImageIndex, setHeroImageIndex] = useState(0);
+
+  useEffect(() => {
+    if (heroImages.length > 1) {
+      const interval = setInterval(() => {
+        setHeroImageIndex(prev => (prev + 1) % heroImages.length);
+      }, 4000);
+      return () => clearInterval(interval);
+    }
+  }, [heroImages]);
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-800 selection:bg-emerald-200 selection:text-emerald-900">
@@ -115,12 +147,15 @@ const LandingPage: React.FC = () => {
 
           <div className="flex-1 w-full relative hidden md:block">
             {/* Abstract architectural visual */}
-            <div className="relative aspect-[4/3] w-full rounded-2xl overflow-hidden shadow-2xl border border-slate-700/50 transform lg:rotate-2 hover:rotate-0 transition-transform duration-700">
-              <img 
-                src="https://images.unsplash.com/photo-1600607686527-6fb886090705?auto=format&fit=crop&q=80&w=1200" 
-                alt="Interior moderno" 
-                className="w-full h-full object-cover"
-              />
+            <div className="relative aspect-[4/3] w-full rounded-2xl overflow-hidden shadow-2xl border border-slate-700/50 transform lg:rotate-2 hover:rotate-0 transition-transform duration-700 bg-slate-800">
+              {heroImages.map((src, idx) => (
+                <img 
+                  key={src + idx}
+                  src={src} 
+                  alt="Interior de departamento" 
+                  className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${idx === heroImageIndex ? 'opacity-100' : 'opacity-0'}`}
+                />
+              ))}
               {/* Glassmorphism float card */}
               <div className="absolute bottom-6 left-6 right-6 bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-xl text-white">
                 <div className="flex items-center gap-4 mb-2">
@@ -360,6 +395,28 @@ const LandingPage: React.FC = () => {
                       placeholder="+51 999 999 999"
                     />
                   </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-1">Departamento de interés (Opcional)</label>
+                  <select
+                    value={contactForm.departmentId}
+                    onChange={(e) => {
+                      const dept = availableDepartments.find(d => (d.id || d._id) === e.target.value);
+                      setContactForm({
+                        ...contactForm, 
+                        departmentId: e.target.value,
+                        departmentName: dept ? dept.name : ''
+                      });
+                    }}
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors bg-white"
+                  >
+                    <option value="">Selecciona un departamento...</option>
+                    {availableDepartments.map(dept => (
+                      <option key={dept.id || dept._id} value={dept.id || dept._id}>
+                        {dept.name} (Cod: {dept.code})
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-1">Mensaje</label>

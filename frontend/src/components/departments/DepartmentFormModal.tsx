@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { X, Save, UploadCloud } from 'lucide-react';
+import { X, Save, UploadCloud, Plus, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { departmentService } from '@/services/departmentService';
 import { CreateDepartmentData, Department } from '@/types/department';
@@ -16,6 +16,7 @@ interface DepartmentFormModalProps {
 export const DepartmentFormModal: React.FC<DepartmentFormModalProps> = ({ isOpen, onClose, onSuccess, initialData }) => {
   const [coordinates, setCoordinates] = useState<{lat: number, lng: number} | null>(null);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [inventory, setInventory] = useState<{category: string, item: string, quantity: number, condition: string}[]>([]);
   const { register, handleSubmit, formState: { isSubmitting }, reset } = useForm<CreateDepartmentData>({
     defaultValues: {
       address: {
@@ -49,6 +50,16 @@ export const DepartmentFormModal: React.FC<DepartmentFormModalProps> = ({ isOpen
         if (initialData.address?.coordinates) {
           setCoordinates(initialData.address.coordinates);
         }
+        if (initialData.inventory) {
+          setInventory(initialData.inventory.map(i => ({
+            category: i.category || 'General',
+            item: i.item || '',
+            quantity: i.quantity || 1,
+            condition: i.condition || 'good'
+          })));
+        } else {
+          setInventory([]);
+        }
       } else {
         reset({
           address: { country: 'Perú', state: 'Lima' },
@@ -56,6 +67,7 @@ export const DepartmentFormModal: React.FC<DepartmentFormModalProps> = ({ isOpen
           features: []
         });
         setCoordinates(null);
+        setInventory([]);
       }
       setSelectedFiles([]);
     }
@@ -91,6 +103,7 @@ export const DepartmentFormModal: React.FC<DepartmentFormModalProps> = ({ isOpen
           bedrooms: Number(data.bedrooms || 0),
           bathrooms: Number(data.bathrooms || 0),
           floor: Number(data.floor || 1),
+          inventory: inventory,
         };
 
       let dId = initialData?.id || initialData?._id;
@@ -116,6 +129,7 @@ export const DepartmentFormModal: React.FC<DepartmentFormModalProps> = ({ isOpen
       
       reset();
       setSelectedFiles([]);
+      setInventory([]);
       onSuccess();
     } catch (error) {
       console.error(error);
@@ -257,6 +271,97 @@ export const DepartmentFormModal: React.FC<DepartmentFormModalProps> = ({ isOpen
                 className="w-4 h-4 text-blue-600 bg-white border-gray-300 rounded focus:ring-blue-500"
               />
               <label htmlFor="hasFurniture" className="ml-2 block text-sm font-medium text-slate-700">Amoblado</label>
+            </div>
+
+            <div className="col-span-1 md:col-span-2 mt-6 p-4 border border-slate-200 rounded-xl bg-slate-50">
+              <div className="flex justify-between items-center mb-4">
+                <label className="block text-sm font-medium text-slate-700">Inventario (Mobiliario y Equipamiento)</label>
+                <button 
+                  type="button" 
+                  onClick={() => setInventory([...inventory, { category: 'General', item: '', quantity: 1, condition: 'good' }])}
+                  className="text-sm font-medium text-blue-600 hover:text-blue-700 flex items-center gap-1"
+                >
+                  <Plus className="w-4 h-4" /> Agregar Ítem
+                </button>
+              </div>
+              
+              {inventory.length === 0 ? (
+                <p className="text-sm text-slate-500 text-center py-4 bg-white rounded-lg border border-slate-200 border-dashed">No hay ítems en el inventario. Agrega uno si el departamento está amoblado o equipado.</p>
+              ) : (
+                <div className="space-y-3">
+                  {inventory.map((invItem, idx) => (
+                    <div key={idx} className="flex flex-col sm:flex-row gap-3 items-start sm:items-center bg-white p-3 rounded-lg border border-slate-200">
+                      <div className="w-full sm:w-1/4">
+                        <input 
+                          type="text"
+                          value={invItem.category}
+                          onChange={(e) => {
+                            const newInv = [...inventory];
+                            newInv[idx].category = e.target.value;
+                            setInventory(newInv);
+                          }}
+                          placeholder="Categoría (Ej. Cocina)"
+                          className="w-full px-3 py-1.5 text-sm bg-white border border-slate-300 rounded focus:ring-1 focus:ring-blue-500 outline-none"
+                        />
+                      </div>
+                      <div className="w-full sm:w-2/5">
+                        <input 
+                          type="text"
+                          value={invItem.item}
+                          onChange={(e) => {
+                            const newInv = [...inventory];
+                            newInv[idx].item = e.target.value;
+                            setInventory(newInv);
+                          }}
+                          placeholder="Nombre del artículo"
+                          className="w-full px-3 py-1.5 text-sm bg-white border border-slate-300 rounded focus:ring-1 focus:ring-blue-500 outline-none"
+                        />
+                      </div>
+                      <div className="w-1/2 sm:w-1/6">
+                        <input 
+                          type="number"
+                          min="1"
+                          value={invItem.quantity}
+                          onChange={(e) => {
+                            const newInv = [...inventory];
+                            newInv[idx].quantity = Number(e.target.value);
+                            setInventory(newInv);
+                          }}
+                          placeholder="Cant."
+                          className="w-full px-3 py-1.5 text-sm bg-white border border-slate-300 rounded focus:ring-1 focus:ring-blue-500 outline-none"
+                        />
+                      </div>
+                      <div className="w-1/2 sm:w-1/4 flex gap-2">
+                        <select 
+                          value={invItem.condition}
+                          onChange={(e) => {
+                            const newInv = [...inventory];
+                            newInv[idx].condition = e.target.value;
+                            setInventory(newInv);
+                          }}
+                          className="w-full px-3 py-1.5 text-sm bg-white border border-slate-300 rounded focus:ring-1 focus:ring-blue-500 outline-none"
+                        >
+                          <option value="new">Nuevo</option>
+                          <option value="good">Bueno</option>
+                          <option value="fair">Regular</option>
+                          <option value="poor">Malo</option>
+                        </select>
+                        <button 
+                          type="button" 
+                          onClick={() => {
+                            const newInv = [...inventory];
+                            newInv.splice(idx, 1);
+                            setInventory(newInv);
+                          }}
+                          className="p-1.5 text-red-500 hover:bg-red-50 rounded"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="col-span-1 md:col-span-2 mt-4 p-4 border border-slate-200 border-dashed rounded-xl bg-slate-50">

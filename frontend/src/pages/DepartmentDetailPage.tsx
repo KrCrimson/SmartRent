@@ -7,6 +7,7 @@ import { LocationMap } from '@/components/LocationMap';
 import { ContactForm } from '@/components/ContactForm';
 import { departmentService } from '@/services/departmentService';
 import type { Department } from '@/types/department';
+import { useAuth } from '@/hooks/useAuth';
 
 export const DepartmentDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -14,6 +15,9 @@ export const DepartmentDetailPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'overview' | 'inventory' | 'location' | 'contact'>('overview');
+  
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'admin';
 
   useEffect(() => {
     if (id) {
@@ -77,12 +81,15 @@ export const DepartmentDetailPage: React.FC = () => {
     maintenance: 'En mantenimiento',
   };
 
-  const tabs = [
-    { id: 'overview' as const, label: 'Información', icon: Home },
-    { id: 'inventory' as const, label: 'Inventario', icon: Square },
-    { id: 'location' as const, label: 'Ubicación', icon: MapPin },
-    { id: 'contact' as const, label: 'Contacto', icon: Calendar },
+  const tabs: Array<{ id: 'overview' | 'inventory' | 'location' | 'contact'; label: string; icon: any }> = [
+    { id: 'overview', label: 'Información', icon: Home },
+    { id: 'inventory', label: 'Inventario', icon: Square },
+    { id: 'location', label: 'Ubicación', icon: MapPin },
   ];
+  
+  if (!isAdmin) {
+    tabs.push({ id: 'contact' as const, label: 'Contacto', icon: Calendar });
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -278,7 +285,7 @@ export const DepartmentDetailPage: React.FC = () => {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Resumen de contacto rápido */}
-            {department.status === 'available' && (
+            {!isAdmin && department.status === 'available' && (
               <div className="bg-white rounded-lg shadow-md p-6">
                 <h3 className="text-lg font-bold text-gray-900 mb-4">¿Te interesa este departamento?</h3>
                 <div className="space-y-3">

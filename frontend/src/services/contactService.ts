@@ -5,6 +5,8 @@ export interface CreateContactRequestData {
   email: string;
   phone: string;
   message: string;
+  departmentId?: string;
+  departmentName?: string;
 }
 
 export interface ContactRequest extends CreateContactRequestData {

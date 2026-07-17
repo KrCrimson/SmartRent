@@ -111,11 +111,8 @@ export interface DepartmentFilters {
 export type DepartmentStatus = 'available' | 'occupied' | 'maintenance';
 
 export interface InventoryItem {
-  id: string;
-  name: string;
-  description?: string;
-  brand?: string;
-  model?: string;
+  category: string;
+  item: string;
   condition: string;
   quantity: number;
 }

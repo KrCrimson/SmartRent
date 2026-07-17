@@ -61,7 +61,7 @@ const ImageGalleryModal: React.FC<ImageGalleryModalProps> = ({ department, onClo
       </div>
 
       {/* Main Image */}
-      <div className="relative w-full h-[70vh] flex items-center justify-center px-4 md:px-20 mt-12">
+      <div className="relative w-full h-[75vh] md:h-[80vh] flex items-center justify-center px-4 md:px-20 mt-20">
         <img 
           src={images[currentIndex]} 
           alt={`Vista ${currentIndex + 1} de ${department.name}`}
@@ -89,7 +89,7 @@ const ImageGalleryModal: React.FC<ImageGalleryModalProps> = ({ department, onClo
 
       {/* Thumbnails */}
       {images.length > 1 && (
-        <div className="absolute bottom-8 left-0 right-0 flex justify-center gap-3 px-4 overflow-x-auto py-4">
+        <div className="w-full flex justify-center gap-3 px-4 overflow-x-auto py-6 mt-auto mb-4 bg-slate-900/50 backdrop-blur-md">
           {images.map((img, idx) => (
             <button
               key={idx}
