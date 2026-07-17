@@ -3,6 +3,7 @@ import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { NotFoundError } from '../../../shared/errors/NotFoundError';
 import { ConflictError } from '../../../shared/errors/ConflictError';
 import { ValidationError } from '../../../shared/errors/ValidationError';
+import { IPasswordHashService } from '../../interfaces/IPasswordHashService';
 import { Password } from '../../../domain/value-objects/Password.vo';
 
 export interface UpdateUserRequest {
@@ -18,7 +19,10 @@ export interface UpdateUserRequest {
 }
 
 export class UpdateUserUseCase {
-  constructor(private userRepository: IUserRepository) {}
+  constructor(
+    private userRepository: IUserRepository,
+    private passwordHashService: IPasswordHashService
+  ) {}
 
   async execute(userId: string, updateData: UpdateUserRequest): Promise<User> {
     // Validar ID de usuario
@@ -75,7 +79,8 @@ export class UpdateUserUseCase {
 
     // Actualizar contraseña si se proporciona
     if (updateData.password !== undefined && updateData.password.trim() !== '') {
-      const newPassword = new Password(updateData.password);
+      const hashedPassword = await this.passwordHashService.hash(updateData.password);
+      const newPassword = new Password(hashedPassword, true);
       existingUser.updatePassword(newPassword);
     }
 

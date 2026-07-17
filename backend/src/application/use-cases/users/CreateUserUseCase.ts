@@ -1,5 +1,6 @@
 import { User } from '../../../domain/entities/User.entity';
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
+import { IPasswordHashService } from '../../interfaces/IPasswordHashService';
 import { ConflictError } from '../../../shared/errors/ConflictError';
 import { ValidationError } from '../../../shared/errors/ValidationError';
 
@@ -12,7 +13,10 @@ export interface CreateUserRequest {
 }
 
 export class CreateUserUseCase {
-  constructor(private userRepository: IUserRepository) {}
+  constructor(
+    private userRepository: IUserRepository,
+    private passwordHashService: IPasswordHashService
+  ) {}
 
   async execute(request: CreateUserRequest): Promise<User> {
     // Validaciones de negocio
@@ -36,10 +40,13 @@ export class CreateUserUseCase {
       throw new ConflictError(`Ya existe un usuario con el email: ${request.email}`);
     }
 
+    // Hashear contraseña
+    const hashedPassword = await this.passwordHashService.hash(request.password);
+
     // Crear nuevo usuario usando el factory method
     const newUser = User.create({
       email: request.email,
-      password: request.password,
+      password: hashedPassword,
       role: request.role,
       fullName: request.fullName.trim(),
       phone: request.phone.trim()

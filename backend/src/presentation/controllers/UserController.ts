@@ -6,6 +6,7 @@ import { GetUserByIdUseCase } from '../../application/use-cases/users/GetUserByI
 import { UpdateUserUseCase } from '../../application/use-cases/users/UpdateUserUseCase';
 import { DeleteUserUseCase } from '../../application/use-cases/users/DeleteUserUseCase';
 import { UserRepository } from '../../infrastructure/repositories/UserRepository';
+import { BcryptService } from '../../infrastructure/services/BcryptService';
 import { NotFoundError } from '../../shared/errors/NotFoundError';
 import { ConflictError } from '../../shared/errors/ConflictError';
 import { ValidationError } from '../../shared/errors/ValidationError';
@@ -31,10 +32,11 @@ export class UserController {
 
   constructor() {
     this.userRepository = new UserRepository();
-    this.createUserUseCase = new CreateUserUseCase(this.userRepository);
+    const passwordHashService = new BcryptService();
+    this.createUserUseCase = new CreateUserUseCase(this.userRepository, passwordHashService);
     this.getAllUsersUseCase = new GetAllUsersUseCase(this.userRepository);
     this.getUserByIdUseCase = new GetUserByIdUseCase(this.userRepository);
-    this.updateUserUseCase = new UpdateUserUseCase(this.userRepository);
+    this.updateUserUseCase = new UpdateUserUseCase(this.userRepository, passwordHashService);
     this.deleteUserUseCase = new DeleteUserUseCase(this.userRepository);
   }
 
