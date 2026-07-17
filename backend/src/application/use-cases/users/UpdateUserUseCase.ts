@@ -3,6 +3,7 @@ import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { NotFoundError } from '../../../shared/errors/NotFoundError';
 import { ConflictError } from '../../../shared/errors/ConflictError';
 import { ValidationError } from '../../../shared/errors/ValidationError';
+import { Password } from '../../../domain/value-objects/Password.vo';
 
 export interface UpdateUserRequest {
   fullName?: string;
@@ -13,6 +14,7 @@ export interface UpdateUserRequest {
   contractStartDate?: Date;
   contractEndDate?: Date;
   isActive?: boolean;
+  password?: string;
 }
 
 export class UpdateUserUseCase {
@@ -69,6 +71,12 @@ export class UpdateUserUseCase {
         fullName: updateData.fullName,
         phone: updateData.phone
       });
+    }
+
+    // Actualizar contraseña si se proporciona
+    if (updateData.password !== undefined && updateData.password.trim() !== '') {
+      const newPassword = new Password(updateData.password);
+      existingUser.updatePassword(newPassword);
     }
 
     // Manejar asignación de departamento
