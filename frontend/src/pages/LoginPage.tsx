@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '@hooks/useAuth';
-import { LogIn, Loader2 } from 'lucide-react';
+import { LogIn, Loader2, ArrowLeft } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import type { LoginCredentials } from '@/types/auth';
 
 export const LoginPage: React.FC = () => {
@@ -26,9 +27,16 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-primary-100">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-        <div className="text-center mb-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-primary-100 p-4">
+      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md relative">
+        <Link 
+          to="/" 
+          className="absolute top-4 left-4 p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
+          title="Regresar al inicio"
+        >
+          <ArrowLeft className="w-5 h-5" />
+        </Link>
+        <div className="text-center mb-8 mt-2">
           <h1 className="text-3xl font-bold text-gray-900">SmartRent</h1>
           <p className="text-gray-600 mt-2">Sistema de Gestión de Departamentos</p>
         </div>

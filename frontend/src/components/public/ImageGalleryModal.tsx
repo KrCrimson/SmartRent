@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Department } from '@/types/department';
+import { getImageUrl } from '@/utils/imageUtils';
 
 interface ImageGalleryModalProps {
   department: Department;
@@ -9,7 +10,7 @@ interface ImageGalleryModalProps {
 
 const ImageGalleryModal: React.FC<ImageGalleryModalProps> = ({ department, onClose }) => {
   const images = department.images && department.images.length > 0 
-    ? department.images 
+    ? department.images.map(img => getImageUrl(img))
     : ['https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=800'];
   
   const [currentIndex, setCurrentIndex] = useState(0);

@@ -6,6 +6,7 @@ import { contactService } from '@/services/contactService';
 import { Department } from '@/types/department';
 import ImageGalleryModal from '@/components/public/ImageGalleryModal';
 import toast from 'react-hot-toast';
+import { getImageUrl } from '@/utils/imageUtils';
 
 const LandingPage: React.FC = () => {
   const [availableDepartments, setAvailableDepartments] = useState<Department[]>([]);
@@ -198,7 +199,7 @@ const LandingPage: React.FC = () => {
                     onClick={() => setSelectedDeptForGallery(dept)}
                   >
                     <img 
-                      src={dept.images && dept.images.length > 0 ? dept.images[0] : `https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=800`} 
+                      src={dept.images && dept.images.length > 0 ? getImageUrl(dept.images[0]) : `https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=800`} 
                       alt="Interior" 
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                     />

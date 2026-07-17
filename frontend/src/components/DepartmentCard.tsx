@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Bed, Bath, Square, Trash2 } from 'lucide-react';
 import type { Department } from '@/types/department';
+import { getImageUrl } from '@/utils/imageUtils';
 
 interface DepartmentCardProps {
   department: Department;
@@ -16,7 +17,7 @@ export const DepartmentCard: React.FC<DepartmentCardProps> = ({ department, isAd
   const statusLabel = isAvailable ? 'Disponible' : 'Ocupado';
 
   const fallbackImage = 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=800';
-  const mainImage = department.images?.[0] || `/depas/${department.code}/1.jpg`;
+  const mainImage = department.images?.[0] ? getImageUrl(department.images[0]) : `/depas/${department.code}/1.jpg`;
   const depId = department.id || department._id;
 
   return (
@@ -39,6 +40,7 @@ export const DepartmentCard: React.FC<DepartmentCardProps> = ({ department, isAd
                 <button 
                   onClick={(e) => {
                     e.preventDefault();
+                    e.stopPropagation();
                     onEdit();
                   }}
                   className="p-2 bg-white/90 hover:bg-emerald-600 hover:text-white text-emerald-600 rounded-full shadow-lg backdrop-blur-sm transition-all"
@@ -51,6 +53,7 @@ export const DepartmentCard: React.FC<DepartmentCardProps> = ({ department, isAd
                 <button 
                   onClick={(e) => {
                     e.preventDefault();
+                    e.stopPropagation();
                     onDelete();
                   }}
                   className="p-2 bg-white/90 hover:bg-red-600 hover:text-white text-red-600 rounded-full shadow-lg backdrop-blur-sm transition-all"

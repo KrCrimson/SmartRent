@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight, X, ZoomIn } from 'lucide-react';
+import { getImageUrl } from '@/utils/imageUtils';
 
 interface ImageCarouselProps {
   images: string[];
@@ -12,7 +13,7 @@ export const ImageCarousel: React.FC<ImageCarouselProps> = ({ images, alt = 'Dep
 
   const hasImages = images && images.length > 0;
   const placeholder = 'https://via.placeholder.com/800x600?text=Sin+Imagen';
-  const displayImages = hasImages ? images : [placeholder];
+  const displayImages = hasImages ? images.map(img => getImageUrl(img)) : [placeholder];
 
   const goToPrevious = () => {
     setCurrentIndex((prev) => (prev === 0 ? displayImages.length - 1 : prev - 1));
